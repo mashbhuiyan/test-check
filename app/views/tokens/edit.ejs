@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+
+<body class="theme-light">
+<div class="page">
+    <%- include('../shared/header.ejs') %>
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="page-header">
+                <div class="page-pretitle">Token</div>
+                <h2 class="page-title"> Update Tokens </h2>
+
+            </div>
+            <div class="form-wrapper my-3 py-5 bg-light">
+                <form action="/tokens/<%= token._id %>/update" method="POST"
+                      class="mx-auto border p-5 form-content"
+                      style="width: 60%; border-radius: 5px; box-shadow: 0px 0px 5px #f1f1f1; background-color: #ffffff;">
+                    <p style="word-wrap: break-word;">
+                        <b>Access Token:</b>
+                        <%= token.access_token %>
+                    </p>
+                    <p><b>Type:</b>
+                        <span style="text-transform: uppercase">
+                            <%= token.type %>
+                        </span>
+                    </p>
+
+                    <div>
+                        <% if (error) { %>
+                            <div class="error" style="color: red;">
+                                <p>
+                                    <%= error %>
+                                </p>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="token_label"> Label </label>
+                        <input type="text" id="token_label" value="<%= token.label %>" name="label"
+                               class="form-control my-2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_request_limit"> Request Limit </label>
+                        <input type="number" id="token_request_limit" value="<%= token.request_limit %>"
+                               name="request_limit" class="form-control my-2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_request_period"> Request Limit Period (Seconds) </label>
+                        <input type="number" id="token_request_period" value="<%= token.request_period %>"
+                               name="request_period" class="form-control my-2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_whitelist_ips"> Whitelist IPs (Comma separated)</label>
+                        <input type="text" value="<%= token.whitelisted_ips.join(', ') %>"
+                               name="whitelisted_ips" id="token_whitelist_ips" class="form-control my-2"
+                               placeholder="ex: 192.168.0.1,192.168.0.2">
+                    </div>
+                    <% if (token.type === 'generic') { %>
+                        <div class="mb-3">
+                            <label for="token_project_id"> Project ID</label>
+                            <input type="text" value="<%= token.project_id %>"
+                                   name="project_id" id="token_project_id" class="form-control my-2">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="token_bid_multipliers"> Campaign Bid Multipliers</label>
+                            <textarea rows="5" name="campaign_bid_multipliers" id="token_bid_multipliers"
+                                      class="form-control my-2"
+                                      placeholder='[{"campaign_id":1,"multiplier":150}]'><%= token.campaign_bid_multipliers.length > 0 ? JSON.stringify(token.campaign_bid_multipliers.map(bid => {
+                                    return {
+                                        campaign_id: bid.campaign_id,
+                                        multiplier: bid.multiplier
+                                    };
+                                })) : '' %></textarea>
+                        </div>
+                    <% } %>
+                    <div class="mb-3">
+                        <label for="token_access_level"> Access Level </label>
+                        <select class="form-select my-2" name="access_level" id="token_access_level">
+                            <option <%= token.access_level === 'read' ? 'selected' : '' %> value="read"> Read
+                            </option>
+                            <option <%= token.access_level === 'write' ? 'selected' : '' %> value="write">
+                                Write
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_active"> Status </label>
+                        <select class="form-select my-2" name="active" id="token_active">
+                            <option <%= token.active ? 'selected' : '' %> value="true"> Active</option>
+                            <option <%= token.active ? '' : 'selected' %> value="false"> Disabled</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_schema_validation_required"> Schema Validation </label>
+                        <select class="form-select my-2" name="schema_validation_required"
+                                id="token_schema_validation_required">
+                            <option <%= token.schema_validation_required ? 'selected' : '' %> value="true"> Active
+                            </option>
+                            <option <%= token.schema_validation_required ? '' : 'selected' %> value="false"> Disabled
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_transfer_types"> Transfer Types </label>
+                        <div class="transfer-types-checks my-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="transfer_type_cold"
+                                       name="transfer_types[]"
+                                       value=0 <%= token.transfer_types.includes(0) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="transfer_type_cold">Cold</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="transfer_type_blind"
+                                       name="transfer_types[]"
+                                       value=1 <%= token.transfer_types.includes(1) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="transfer_type_blind">Blind</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="transfer_type_warm"
+                                       name="transfer_types[]"
+                                       value=2 <%= token.transfer_types.includes(2) ? 'checked' : '' %>>
+                                <label class="form-check-label" for="transfer_type_warm">Warm</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_brands"> Brands </label>
+                        <div class="brands-checks my-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="brand_smartfinancial"
+                                       name="brands[]"
+                                       value="smartfinancial" <%= token.brands.includes('smartfinancial') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="brand_smartfinancial">SmartFinancial</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="brand_usha" name="brands[]"
+                                       value="usha" <%= token.brands.includes('usha') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="brand_usha">Usha</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="brand_insuranceagents"
+                                       name="brands[]"
+                                       value="insuranceagents" <%= token.brands.includes('insuranceagents') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="brand_insuranceagents">InsuranceAgents</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="brand_goal" name="brands[]"
+                                       value="goal" <%= token.brands.includes('goal') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="brand_goal">Goal</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="brand_smartfinancial_pro"
+                                       name="brands[]"
+                                       value="smartfinancial_pro" <%= token.brands.includes('smartfinancial_pro') ? 'checked' : '' %>>
+                                <label class="form-check-label" for="brand_smartfinancial_pro">Smartfinancial
+                                    Pro</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_call_origination_type"> Call Origination Type </label>
+                        <select class="form-select my-2" name="call_origination_type" id="token_call_origination_type">
+                            <option <%= token.call_origination_type === 1 ? 'selected' : '' %> value="1"> Inbound
+                            </option>
+                            <option <%= token.call_origination_type === 2 ? 'selected' : '' %> value="2"> Outbound
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="token_call_origination_type"> Read Replica Database </label>
+                        <div class="brands-checks my-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="use-replica" name="use_replica"
+                                       value="true" <%= token.use_replica ? 'checked' : '' %>>
+                                <label class="form-check-label" for="use-replica">Use Replica DB</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="actions text-end mt-4">
+                        <a href="/tokens" class="btn btn-light"> Back </a>
+                        <button type="submit" class="btn btn-primary">
+                            Update Token
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../shared/footer.ejs') %>
+</body>

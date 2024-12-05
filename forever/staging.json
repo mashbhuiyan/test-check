@@ -1,0 +1,10 @@
+{
+  "uid": "staging",
+  "append": true,
+  "watch": false,
+  "script": "server.js",
+  "sourceDir": "/home/ec2-user/apps/client_api_staging/current",
+  "logFile": "/home/ec2-user/apps/client_api_staging/logs/forever.log",
+  "outFile": "/home/ec2-user/apps/client_api_staging/logs/out.log",
+  "errFile": "/home/ec2-user/apps/client_api_staging/logs/error.log"
+}

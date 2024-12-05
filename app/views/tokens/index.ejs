@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+
+<body class="theme-light">
+<div class="page">
+    <%- include('../shared/header.ejs') %>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="page-pretitle"> Tokens</div>
+                        <h1 class="page-title"> Users Tokens </h1>
+                    </div>
+                    <div class="btn-list">
+                        <form action="/tokens/create" method="post">
+                            <button type="submit" class="btn btn-primary d-none d-sm-inline-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Create New Token
+                            </button>
+                        </form>
+                        <form action="/tokens/create" method="post">
+                            <button type="submit" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal"
+                                    data-bs-target="#modal-report" aria-label="Create new Report">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <div class="container-xl">
+                <div class="row row-cards">
+                    <div class="col-12">
+                        <div class="card">
+                            <% if (error) { %>
+                                <div class="error" style="color: red;">
+                                    <p>
+                                        <%= error %>
+                                    </p>
+                                </div>
+                            <% } %>
+                            <div class="card-body border-bottom py-3">
+                                <form class="btn-list" action="" method="get">
+                                    <div class="text-muted">
+                                        <select name="type" class="form-select">
+                                            <option value="" <%= type ? '' : 'selected' %>>Token Type</option>
+                                            <option value="admin" <%= type === 'admin' ? 'selected' : '' %>>Admin
+                                            </option>
+                                            <option value="generic" <%= type === 'generic' ? 'selected' : '' %>>
+                                                Generic
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="text-muted">
+                                        <select name="level" class="form-select">
+                                            <option value="" <%= level ? '' : 'selected' %>>Access Level</option>
+                                            <option value="read" <%= level === 'read' ? 'selected' : '' %>>Read</option>
+                                            <option value="write" <%= level === 'write' ? 'selected' : '' %>>Write
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="text-muted">
+                                        <select name="status" class="form-select">
+                                            <option value="" <%= status ? '' : 'selected' %>>Status</option>
+                                            <option value="1" <%= status === '1' ? 'selected' : '' %>>Active</option>
+                                            <option value="0" <%= status === '0' ? 'selected' : '' %>>Disabled</option>
+                                        </select>
+                                    </div>
+                                    <div class="text-muted">
+                                        <input type="text" class="form-control" name="project_id"
+                                               placeholder="Project ID" value="<%= project_id %>">
+                                    </div>
+                                    <div class="text-muted">
+                                        <input type="text" class="form-control" name="search"
+                                               placeholder="ID, Label, Access Token" value="<%= search %>">
+                                    </div>
+                                    <div class="text-muted">
+                                        <button class="btn btn-outline-primary">Search</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-vcenter card-table">
+                                    <thead>
+                                    <tr>
+                                        <th> ID</th>
+                                        <th> Type</th>
+                                        <th> Label</th>
+                                        <th> Project ID</th>
+                                        <th> Access Level</th>
+                                        <th> Status</th>
+                                        <th> Schema Validation</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% if (tokens.length) { %>
+                                        <% for (let token of tokens) { %>
+                                            <tr class="align-middle">
+                                                <td>
+                                                    <%= token._id %>
+                                                </td>
+                                                <td>
+                                                    <%= token.type.toUpperCase() %>
+                                                </td>
+                                                <td>
+                                                    <%= token.label %>
+                                                </td>
+                                                <td>
+                                                    <%= token.project_id %>
+                                                </td>
+                                                <td>
+                                                    <%= token.access_level.toUpperCase() %>
+                                                </td>
+                                                <td>
+                                                    <%= token.active ? ' Active' : ' Disabled' %>
+                                                </td>
+                                                <td>
+                                                    <%= token.schema_validation_required ? ' Active' : ' Disabled' %>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-list justify-content-end">
+                                                        <a href="#" class="btn btn-white" data-bs-toggle="modal"
+                                                           data-bs-target="#modal-token-<%= token._id %>">View</a>
+                                                        <a class="btn btn-outline-success"
+                                                           href="/tokens/<%= token._id %>/edit"> Edit </a>
+                                                        <form action="/tokens/<%= token._id %>/delete?_method=DELETE"
+                                                              method="POST" style="display: inline-block;">
+                                                            <button type="submit" class="btn btn-danger">
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                        <div class="modal modal-blur fade"
+                                                             id="modal-token-<%= token._id %>" tabindex="-1">
+                                                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+                                                                 role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title"><%= token.label ? token.label : token._id %></h5>
+                                                                        <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <div class="mb-2">
+                                                                            <h4>Access Token</h4>
+                                                                            <p><%= token.access_token %></p>
+                                                                        </div>
+                                                                        <% if (token.request_limit) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Request Limit</h4>
+                                                                                <p><%= token.request_limit %></p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.request_period) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Request Period</h4>
+                                                                                <p><%= token.request_period %>
+                                                                                    Seconds</p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.whitelisted_ips.length) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Whitelisted IPs</h4>
+                                                                                <p><%= token.whitelisted_ips.join(', ') %></p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.campaign_bid_multipliers.length) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Bid Multiplier</h4>
+                                                                                <p>
+                                                                                <pre style="padding: 0 5px;">
+                                                                                        <%= token.campaign_bid_multipliers.map(bid => {
+                                                                                            return JSON.stringify({
+                                                                                                campaign_id: bid.campaign_id,
+                                                                                                multiplier: bid.multiplier
+                                                                                            });
+                                                                                        }) %>
+                                                                                    </pre>
+                                                                                </p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.transfer_types.length) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Transfer Types</h4>
+                                                                                <p>
+                                                                                    <%= token.transfer_types.map(type => {
+                                                                                        if (type === 0) {
+                                                                                            return 'Cold';
+                                                                                        } else if (type === 1) {
+                                                                                            return 'Blind';
+                                                                                        } else if (type === 2) {
+                                                                                            return 'Warm';
+                                                                                        }
+                                                                                    }).join(', ') %>
+                                                                                </p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.call_origination_type) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Call Origination Type</h4>
+                                                                                <p><%= token.call_origination_type === 1 ? 'Inbound' : (token.call_origination_type === 2 ? 'Outbound' : '') %></p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <% if (token.brands.length) { %>
+                                                                            <div class="mb-2">
+                                                                                <h4>Brands</h4>
+                                                                                <p>
+                                                                                    <%= token.brands.map(brand => {
+                                                                                        if (brand === 'smartfinancial') {
+                                                                                            return 'SmartFinancial';
+                                                                                        } else if (brand === 'usha') {
+                                                                                            return 'Usha';
+                                                                                        } else if (brand === 'insuranceagents') {
+                                                                                            return 'InsuranceAgents';
+                                                                                        } else if (brand === 'goal') {
+                                                                                            return 'Goal';
+                                                                                        } else if (brand === 'smartfinancial_pro') {
+                                                                                            return 'Smartfinancial Pro';
+                                                                                        }
+                                                                                    }).join(', ') %>
+                                                                                </p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                        <div class="mb-2">
+                                                                            <h4>Use Read replica Database</h4>
+                                                                            <p>
+                                                                                <%= token.use_replica ? 'Yes' : 'No' %>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn me-auto"
+                                                                                data-bs-dismiss="modal">Close
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    <% } else { %>
+                                        <%- include('../shared/empty_table.ejs') %>
+                                    <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer d-flex align-items-center">
+                                <%- include('../shared/pagination.ejs', { page, pageCount, pageUrl }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%- include('../shared/footer.ejs') %>
+</div>
+</body>

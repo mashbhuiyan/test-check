@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="theme-light">
+<div class="page">
+    <%- include('../shared/header.ejs') %>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="page-header d-print-none">
+                <div class="page-pretitle">
+                    Overview
+                </div>
+                <h2 class="page-title">
+                    Dashboard
+                </h2>
+            </div>
+
+            <div class="row loading-charts">
+                <div class="col-md-12">
+                    <h2 style="text-align: center;margin-top: 50px;">Loading charts...</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="bar-multiple-col"></div>
+                    <h3 class="text-center bar-multiple-col-title hidden"> Year <%= new Date().getFullYear() %>: Success vs Error </h3>
+                </div>
+                <div class="col-md-6">
+                    <div id="line-chart"></div>
+                    <h3 class="text-center line-chart-title hidden"> Year <%= new Date().getFullYear() %>: Monthly Request Count </h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div id="bar-chart"></div>
+                    <h3 class="text-center bar-chart-title hidden"> Most Token Usage </h3>
+                </div>
+                <div class="col-md-6 mt-4">
+                    <div id="line-and-area"></div>
+                    <h3 class="text-center line-and-area-title hidden"> Year <%= new Date().getFullYear() %> vs Year <%= new Date().getFullYear() - 1 %>: Request Count </h3>
+                </div>
+            </div>
+
+        </div>
+        <%- include('../shared/footer.ejs') %>
+    </div>
+</div>
+
+<script type="text/javascript">
+    let monthData;
+    $(function() {
+        getChartData();
+        getChartData('monthly_status');
+    });
+
+    function getChartData(aggType = '') {
+        $.ajax({
+            url: '/reports',
+            method: 'GET',
+            data: { agg_type: aggType },
+            success: function(data) {
+                console.log(data);
+                $('.loading-charts').hide();
+                if (aggType === 'monthly_status') {
+                    monthData = data;
+                    getChartData('previous');
+                    successErrorChart(data);
+                    monthlyReqChart(data);
+                } else if (aggType === 'previous') {
+                    yearCompareChart(data);
+                } else {
+                    accessTokenChart(data);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function accessTokenChart(data) {
+        const barChartFeature = {
+            chart: {
+                type: 'bar'
+            },
+            series: [{
+                name: 'sales',
+                data: data.counts
+            }],
+            xaxis: {
+                categories: data.tokenLabels
+            }
+        };
+        const barChart = new ApexCharts(document.querySelector("#bar-chart"), barChartFeature);
+        barChart.render();
+        $('.bar-chart-title').show();
+    }
+
+    function successErrorChart(data) {
+        const barMultipleCol = {
+            series: [{
+                name: 'Success',
+                data: data.success
+            }, {
+                name: 'Error',
+                data: data.error
+            }],
+            colors : ['#53c867', '#c41c3d'],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: data.months,
+            },
+            fill: {
+                opacity: 1
+            }
+        };
+
+        const barMultiple = new ApexCharts(document.querySelector("#bar-multiple-col"), barMultipleCol);
+        barMultiple.render();
+        $('.bar-multiple-col-title').show();
+    }
+
+    function monthlyReqChart(data) {
+        const lineChartFeature = {
+            series: [{
+                name: "Desktops",
+                data: data.data
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            grid: {
+                row: {
+                    colors: ['#f3f3f3', 'transparent'],
+                    opacity: 0.5
+                },
+            },
+            xaxis: {
+                categories: data.months,
+            }
+        };
+
+        const lineChart = new ApexCharts(document.querySelector("#line-chart"), lineChartFeature);
+        lineChart.render();
+        $('.line-chart-title').show();
+    }
+
+    function yearCompareChart(data) {
+        const lineAreaFeature = {
+            series: [{
+                name: 'Year ' + new Date().getFullYear().toString(),
+                type: 'area',
+                data: monthData.data
+            }, {
+                name: 'Year ' + (new Date().getFullYear() - 1).toString(),
+                type: 'line',
+                data: data.previousReport
+            }],
+            chart: {
+                height: 350,
+                type: 'line',
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            fill: {
+                type: 'solid',
+                opacity: [0.35, 1],
+            },
+            labels: monthData.months,
+            markers: {
+                size: 0
+            },
+            yaxis: [
+                {
+                    title: {
+                        text: 'Year ' + new Date().getFullYear().toString(),
+                    },
+                },
+                {
+                    opposite: true,
+                    title: {
+                        text: 'Year ' + (new Date().getFullYear() - 1).toString(),
+                    },
+                },
+            ]
+        };
+
+        const lineArea = new ApexCharts(document.querySelector("#line-and-area"), lineAreaFeature);
+        lineArea.render();
+        $('.line-and-area-title').show();
+    }
+</script>
+</body>

@@ -1,0 +1,40 @@
+<% if (pageCount > 1) { %>
+    <% urlQuerySeparator = pageUrl.split('?').length > 1 ? '&' : '?' %>
+    <ul class="pagination m-0 ms-auto d-flex align-items-center justify-content-end w-100 flex-wrap">
+        <li class="page-item <%= page === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= page - 1 %>" tabindex="-1" aria-disabled="true">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="15 6 9 12 15 18"></polyline></svg>
+                Prev
+            </a>
+        </li>
+        <% if (pageCount >= 15) { %>
+            <% for(var i = 1; i <= (page >= 3 && page <= 5 ? page + 1 : 3); ++i) { %>
+                <li class="page-item <%= i === page ? 'active' : '' %>"><a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= i %>"><%= i %></a></li>
+            <% } %>
+
+            <li class="page-item">...</li>
+
+            <% if (page > 5 && page < pageCount - 4) { %>
+                <% for(i = page - 1; i <= page + 1; ++i) { %>
+                    <li class="page-item <%= i === page ? 'active' : '' %>"><a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= i %>"><%= i %></a></li>
+                <% } %>
+            <% } %>
+
+            <li class="page-item">...</li>
+
+            <% for(i = (page <= pageCount - 2 && page >= pageCount - 4 ? page - 1 : pageCount - 2); i <= pageCount; ++i) { %>
+                <li class="page-item <%= i === page ? 'active' : '' %>"><a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= i %>"><%= i %></a></li>
+            <% } %>
+        <% } else { %>
+            <% for(var j = 1; j <= pageCount; ++j) { %>
+                <li class="page-item <%= j === page ? 'active' : '' %>"><a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= j %>"><%= j %></a></li>
+            <% } %>
+        <% } %>
+        <li class="page-item <%= page === pageCount ? 'disabled' : '' %>">
+            <a class="page-link" href="<%= pageUrl %><%= urlQuerySeparator %>page=<%= page + 1 %>">
+                Next
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><polyline points="9 6 15 12 9 18"></polyline></svg>
+            </a>
+        </li>
+    </ul>
+<% } %>

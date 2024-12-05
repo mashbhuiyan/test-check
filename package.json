@@ -1,0 +1,51 @@
+{
+  "dependencies": {
+    "@airbrake/node": "^2.1.7",
+    "@alenaksu/json-viewer": "^1.0.1",
+    "axios": "^0.27.2",
+    "body-parser": "^1.20.0",
+    "bootstrap": "^5.2.0-beta1",
+    "connect-mongo": "^4.6.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "flat": "^5.0.2",
+    "memcached": "^2.2.2",
+    "memcached-promise": "^1.0.1",
+    "method-override": "^3.0.0",
+    "mocha": "^10.2.0",
+    "mongodb": "^4.8.1",
+    "mongoose": "^6.5.0",
+    "mongoose-timestamp": "^0.6.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nocache": "^3.0.4",
+    "node-cache": "^5.1.2",
+    "object-hash": "^3.0.0",
+    "otplib": "^12.0.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.7.3",
+    "qrcode": "^1.5.1",
+    "request-ip": "^3.3.0",
+    "sass": "^1.54.2",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.5.0",
+    "unescape": "^1.0.1",
+    "uuid": "^8.3.2",
+    "xml-js": "^1.6.11",
+    "xml-to-json-stream": "^1.1.0"
+  },
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js & npm run scss",
+    "scss": "sass --watch app/assets/stylesheets/main.scss public/styles/main.css",
+    "test": "mocha --recursive --exit --timeout 10000"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}

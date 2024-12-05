@@ -1,0 +1,65 @@
+{
+  "lead": {
+    "click_id": "123456789",
+    "ip_address": "75.27.97.10",
+    "lead_type_id": 1,
+    "device_type": "desktop",
+    "user_agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko",
+    "aid": "string",
+    "cid": "string",
+    "traffic_tier": "Email",
+    "contact": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "address": "132 Circle Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "92626",
+      "county": "ORANGE",
+      "primary_phone": "855-581-3316",
+      "email": "email@smartfinancial.com"
+    },
+    "customer_profile": {
+      "gender": "Male",
+      "marital_status": "Married",
+      "credit": "Good",
+      "date_of_birth": "05/05/1985"
+    },
+    "home_info": {
+      "address": "132 Circle Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "92626",
+      "square_footage": 1200,
+      "num_stories": "1",
+      "year_built": 1,
+      "property_type": "Single Family Home",
+      "num_bedrooms": 3,
+      "num_bathrooms": 3,
+      "garage": "AttachedOneCar",
+      "construction_type": "LogHome",
+      "foundation_type": "BasementFullyFinished",
+      "roof_type": "CompositionShingle",
+      "roof_age": "OneTo5Years",
+      "purchase_dt": "05/05/2020",
+      "num_residents": 4,
+      "new_purchase": "Yes",
+      "interior_wall_type": "ConcreteBlock",
+      "exterior_wall_type": "Aluminum",
+      "wiring_type": "Aluminum",
+      "heating_type": "GasForcedAir",
+      "electric_type": "CircuitBreaker",
+      "burglar_alarm": "Yes",
+      "fire_alarm": "Yes",
+      "smoke_alarm": "Yes",
+      "flood_zone": "Yes"
+    },
+    "currently_insured": "Yes",
+    "current_coverage": {
+      "carrier": "Allstate",
+      "expiration_date": "05/05/2024",
+      "coverage_years": 1
+    },
+    "sub1": "Free text"
+  }
+}

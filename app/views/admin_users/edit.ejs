@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+<body class="theme-light">
+    <div class="page">
+        <%- include('../shared/header.ejs') %>
+        <div class="page-wrapper">
+            <div class="container">
+               <div class="page-header">
+                    <div class="page-pretitle">Admin User</div>
+                    <h1 class="page-title"> Create Admin User </h1>
+               </div>
+               
+               <div class="form-wrapper my-3 py-5 bg-light" >
+                <form action="/admin_users/<%= adminUser._id %>/update" method="POST" class="mx-auto border p-5 form-content" style="width: 60%; background-color: #ffffff; border-radius: 5px; box-shadow: 0px 0px 5px #f1f1f1;">
+                    <% if (error) { %>
+                        <div class="error" style="color: red;">
+                            <p>
+                                <%= error %>
+                            </p>
+                        </div>
+                    <% } %>
+                    <div class="mb-3">
+                        <label for="admin_user_name"> Name </label>
+                        <input type="text" id="admin_user_name" value="<%= adminUser.name %>" name="name" class="form-control my-2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="admin_user_email"> Email </label>
+                        <input type="email" id="admin_user_email" value="<%= adminUser.email %>" name="email" class="form-control my-2">
+                    </div>
+                    <div class="mb-3">
+                        <label for="admin_user_password"> Password </label>
+                        <input type="password" id="admin_user_password" value="" name="password" class="form-control my-2">
+                    </div>
+                    <div class="actions text-end mt-4">
+                        <a href="/admin_users" class="btn btn-light"> Back </a>
+                        <button type="submit" class="btn btn-primary">
+                            Update
+                        </button>
+                    </div>
+                </form>
+               </div>
+            </div>
+        </div>
+    </div>
+    <%- include('../shared/footer.ejs') %>
+</body>

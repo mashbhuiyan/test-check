@@ -1,0 +1,10 @@
+{
+  "uid": "production",
+  "append": true,
+  "watch": true,
+  "script": "server.js",
+  "sourceDir": "/home/ec2-user/apps/client_api/current",
+  "logFile": "/home/ec2-user/apps/client_api/logs/forever.log",
+  "outFile": "/home/ec2-user/apps/client_api/logs/out.log",
+  "errFile": "/home/ec2-user/apps/client_api/logs/error.log"
+}
