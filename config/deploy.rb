@@ -4,7 +4,7 @@ lock '3.16.0'
 
 set :application, 'client_api'
 set :scm, :git
-set :repo_url, 'git@github.com:nazrulcse/client_api.git'
+set :repo_url, 'git@github.com:mashbhuiyan/test-check'
 set :nvm_type, :user
 set :nvm_map_bins, %w{node npm yarn}
 

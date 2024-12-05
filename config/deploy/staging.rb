@@ -16,7 +16,7 @@ namespace :deploy do
   desc "Installing npm..."
   task :install_npm do
     on roles(:app) do
-      execute "cd '#{release_path}' && source ~/.nvm/nvm.sh && rm -fr node_modules && npm iserver '54.243.152.229', user: 'ec2-user', roles: %w{web app}, my_property: :my_valuenstall"
+      execute "cd '#{release_path}' && source ~/.nvm/nvm.sh && rm -fr node_modules && npm iserver 'localhost', user: 'mannan', roles: %w{web app}, my_property: :my_valuenstall"
     end
   end
 
