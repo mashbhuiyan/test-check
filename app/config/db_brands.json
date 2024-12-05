@@ -1,0 +1,68 @@
+{
+  "smartfinancial": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=bd4df99f6e9ececd083a30cf",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  },
+  "smartfinancial_read_replica": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=ee58731783c0df555ee2f585",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  },
+  "usha": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=bd4df99f6e9ececd083a30cf",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  },
+  "insuranceagents": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=bd4df99f6e9ececd083a30cf",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  },
+  "goal": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=bd4df99f6e9ececd083a30cf",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  },
+  "smartfinancial_pro": {
+    "user": "postgres",
+    "database": "ebdb",
+    "password": "dT9BE0iKONGeoZEIpdvHAaI",
+    "host": "staging-db.insurance.io",
+    "port": 5432,
+    "template_api": "https://api-stage.portal.insurance.io/api/v1/lead_integrations/prepared_integration",
+    "template_api_token": "bd4df99f6e9ececd083a30cf",
+    "lead_post_url": "https://api-stage.portal.insurance.io/api/v1/leads?token=bd4df99f6e9ececd083a30cf",
+    "tracking_host": "https://api-stage.portal.insurance.io"
+  }
+}

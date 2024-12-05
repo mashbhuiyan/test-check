@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+
+<body class="theme-light">
+<div class="page">
+    <%- include('../shared/header.ejs') %>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="page-pretitle"> Partners</div>
+                        <h1 class="page-title"> Added Partners </h1>
+                    </div>
+                    <div class="btn-list">
+                        <a href="/partners/new" class="btn btn-primary d-none d-sm-inline-block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add New Partner
+                        </a>
+                        <form action="/partners/create" method="post">
+                            <button type="submit" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal"
+                                    data-bs-target="#modal-report" aria-label="Create new Report">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <% if (error) { %>
+                    <div class="error" style="color: red;">
+                        <p>
+                            <%= error %>
+                        </p>
+                    </div>
+                <% } %>
+
+                <div class="table-responsive w-100 my-4">
+                    <table class="table table-light border">
+                        <thead>
+                        <tr>
+                            <th> Token</th>
+                            <th> Name</th>
+                            <th> Module</th>
+                            <th> Timeout (ms)</th>
+                            <th> Status</th>
+                            <th> Tracking URL</th>
+                            <th> Click Integration Link</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <% if(partners.length) { %>
+                            <% for(let partner of partners) { %>
+                                <tr class="align-middle">
+                                    <td>
+                                        <%= partner._id %>
+                                    </td>
+                                    <td>
+                                        <%= partner.name %>
+                                    </td>
+                                    <td>
+                                        <%= partner.module %>
+                                    </td>
+                                    <td>
+                                        <%= partner.timeout %>
+                                    </td>
+                                    <td>
+                                        <%= partner.active ? ' Active' : 'Disabled' %>
+                                    </td>
+                                    <td style="word-break: break-all;">
+                                        /api/v1/click/{click_listing_id}/track/<%= partner._id %>
+                                    </td>
+                                    <td style="word-break: break-all;">
+                                        /api/v1/click_integration/<%= partner._id %>
+                                    </td>
+                                    <td style="min-width: 200px;">
+                                        <a class="btn btn-outline-success"
+                                           href="/partners/<%= partner._id %>/edit"> Edit </a>
+                                        <form action="/partners/<%= partner._id %>/delete?_method=DELETE"
+                                              method="POST" style="display: inline-block;">
+                                            <button type="submit" class="btn btn-danger">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% } else { %>
+                            <%- include('../shared/empty_table.ejs') %>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <%- include('../shared/pagination.ejs', { page, pageCount }) %>
+            </div>
+        </div>
+    </div>
+    <%- include('../shared/footer.ejs') %>
+</div>
+</body>

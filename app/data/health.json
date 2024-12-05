@@ -1,0 +1,69 @@
+{
+  "lead": {
+    "click_id": "123456789",
+    "ip_address": "75.27.97.10",
+    "lead_type_id": 3,
+    "device_type": "desktop",
+    "user_agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko",
+    "aid": "string",
+    "cid": "string",
+    "traffic_tier": "Email",
+    "contact": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "address": "132 Circle Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "92626",
+      "county": "ORANGE",
+      "primary_phone": "855-581-3316",
+      "email": "email@smartfinancial.com"
+    },
+    "applicant_info": {
+      "gender": "Male",
+      "marital_status": "Married",
+      "credit": "Good",
+      "date_of_birth": "05/05/1985",
+      "num_children": "1",
+      "household_income": "Below $17,000",
+      "height_ft": 5.6,
+      "height_in": 66,
+      "weight": 75,
+      "tobacco": "Yes",
+      "occupation": "Retired",
+      "qualifying_life_event": "LostCoverage",
+      "expectant": "Yes",
+      "dui": "Yes"
+    },
+    "dependents": [
+      {
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "dependent_type": "Spouse",
+        "date_of_birth": "05/05/1985",
+        "gender": "Female",
+        "height_ft": 5.1,
+        "height_in": 61,
+        "weight": 65,
+        "tobacco": "No"
+      }
+    ],
+    "medical_history": {
+      "heart_disease": "Yes",
+      "cancer": "No",
+      "medications": "Yes",
+      "med_list": "string",
+      "medical_treatment": "Yes",
+      "hospitalized": "Yes",
+      "pre_existing_condition": "Yes"
+    },
+    "currently_insured": "Yes",
+    "current_coverage": {
+      "carrier": "Allstate",
+      "expiration_date": "05/05/2024",
+      "coverage_years": 1
+    },
+    "requested_coverage": "Individual Family",
+    "sub1": "Free text"
+  }
+}

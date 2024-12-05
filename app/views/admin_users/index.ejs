@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+
+<body class="theme-light">
+<div class="page">
+
+    <%- include('../shared/header.ejs') %>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <div class="page-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="page-pretitle">
+                            users
+                        </div>
+                        <h1 class="page-title"> Admin Users </h1>
+                    </div>
+                    <div class="btn-list">
+                        <a href="/admin_users/new" class="btn btn-primary d-none d-sm-inline-block">
+                            <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Create New Admin User
+                        </a>
+                        <a href="/admin_users/new" class="btn btn-primary d-sm-none btn-icon" aria-label="Create new Admin User">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <% if (error) { %>
+                    <div class="error" style="color: red;">
+                        <p>
+                            <%= error %>
+                        </p>
+                    </div>
+                <% } %>
+
+                <div class="table-responsive my-4 w-100">
+                    <table class="table table-light border">
+                        <thead>
+                        <tr class="text-center">
+                            <th> Name</th>
+                            <th> Email</th>
+                            <th> 2FA Status</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <% if (adminUsers.length) { %>
+                            <% for(let adminUser of adminUsers) { %>
+                                <tr class="align-middle text-center">
+                                    <td>
+                                        <%= adminUser.name %>
+                                    </td>
+                                    <td>
+                                        <%= adminUser.email %>
+                                    </td>
+                                    <td>
+                                        <% if (adminUser.enabled_2fa) { %>
+                                            Enabled
+                                            <form action="/admin_users/<%= adminUser._id %>/disable_2fa"
+                                                  method="POST" style="display: inline-block;">
+                                                <button type="submit" class="btn btn-ghost-danger btn-icon" title="Disable 2FA">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-lock-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <line x1="3" y1="3" x2="21" y2="21"></line>
+                                                        <path d="M19 19a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6a2 2 0 0 1 2 -2h4m4 0h2a2 2 0 0 1 2 2v2"></path>
+                                                        <circle cx="12" cy="16" r="1"></circle>
+                                                        <path d="M8 11v-3m.712 -3.278a4 4 0 0 1 7.288 2.278v4"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        <% } else { %>
+                                                Disabled
+                                        <% } %>
+                                    </td>
+                                    <td class="text-end" style="min-width: 200px;">
+                                        <a class="btn btn-outline-success mx-2"
+                                           href="/admin_users/<%= adminUser._id %>/edit">
+                                            Edit </a>
+                                        <form action="/admin_users/<%= adminUser._id %>/delete?_method=DELETE"
+                                              method="POST" style="display: inline-block;">
+                                            <button type="submit" class="btn btn-danger"> Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% } else { %>
+                            <%- include('../shared/empty_table.ejs') %>
+                        <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <%- include('../shared/pagination.ejs', { page, pageCount }) %>
+            </div>
+        </div>
+    </div>
+    <%- include('../shared/footer.ejs') %>
+</div>
+</body>

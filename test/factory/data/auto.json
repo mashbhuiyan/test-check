@@ -1,0 +1,104 @@
+{
+  "lead": {
+    "click_id": "123456789",
+    "ip_address": "75.27.97.10",
+    "lead_type_id": 6,
+    "device_type": "desktop",
+    "user_agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko",
+    "aid": "string",
+    "cid": "string",
+    "traffic_tier": "Email",
+    "contact": {
+      "first_name": "John",
+      "last_name": "Doe",
+      "address": "132 Circle Ave",
+      "city": "Los Angeles",
+      "state": "CA",
+      "zip": "92626",
+      "county": "ORANGE",
+      "primary_phone": "855-581-3316",
+      "email": "email@smartfinancial.com"
+    },
+    "customer_profile": {
+      "gender": "Male",
+      "marital_status": "Married",
+      "residence": {
+        "years": 2,
+        "own": "Own"
+      },
+      "credit": "Good",
+      "bankruptcy": "Yes",
+      "date_of_birth": "05/05/1985"
+    },
+    "drivers": [
+      {
+        "driver_id": 1,
+        "first_name": "Ivan",
+        "last_name": "McVey",
+        "license_status": "Active",
+        "license_obtained_age": 20,
+        "license_ever_suspended_or_revoked": "Yes",
+        "sr22_required": "Yes",
+        "gender": "Male",
+        "date_of_birth": "05/05/1985",
+        "marital_status": "Married",
+        "occupation": "Retired",
+        "education": "SomeCollege",
+        "relationship_to_contact": "Self",
+        "violations": [
+          {
+            "date": "05/05/2012",
+            "violation_type": "Child Seat"
+          }
+        ],
+        "claims": [
+          {
+            "date": "05/05/2012",
+            "amount": 20,
+            "claim_type": "FireHailWaterDamage"
+          }
+        ],
+        "accidents": [
+          {
+            "incident_date": "05/05/2015",
+            "incident_description": "Hit while stopped",
+            "incident_at_fault": true,
+            "damage_type": "No damage"
+          }
+        ]
+      }
+    ],
+    "multiple_vehicles": "No",
+    "vehicles": [
+      {
+        "vehicle_id": 1,
+        "primary_driver_id": 1,
+        "vin": "1G1PH5SBXEXXXXXXX",
+        "year": 2014,
+        "make": "Chevrolet",
+        "model": "Cruze",
+        "submodel": "ECO 4dr SEDAN (4cyl)",
+        "primary_use": "Commute Work",
+        "garage_type": "Private",
+        "parked_at_mailing_address": "Yes",
+        "garaging_address": "301 Black Oak Hollow Road",
+        "garaging_city": "Sunnyvale",
+        "garaging_state": "CA",
+        "garaging_zip_code": 92626,
+        "one_way_distance": 5,
+        "annual_mileage": 10000,
+        "ownership": "Owned",
+        "coverage_package": "Superior"
+      }
+    ],
+    "currently_insured": "Yes",
+    "current_coverage": {
+      "carrier": "Allstate",
+      "expiration_date": "05/05/2025",
+      "coverage_years": 1,
+      "bodily_injury": "string"
+    },
+    "military_affiliation": "Yes",
+    "sub1": "Free text"
+  }
+}

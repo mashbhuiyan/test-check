@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <%- include('../shared/head.ejs') %>
+</head>
+
+<body class="theme-light">
+<div class="page">
+    <%- include('../shared/header.ejs') %>
+
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header d-print-none">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="">
+                        <!-- Page pre-title -->
+                        <div class="page-pretitle">
+                            Debug
+                        </div>
+                        <h2 class="page-title">
+                            Click Ping
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+
+            <div class="debug-data">
+                <h3 style="margin: 20px 0;"> Click Ping Details </h3>
+                <json-viewer>
+                    <%= click_ping.xml || click_ping.lead_data || click_ping.call_data %>
+                </json-viewer>
+            </div>
+        </div>
+        <%- include('../shared/footer.ejs') %>
+    </div>
+</div>
+<script src="https://unpkg.com/@alenaksu/json-viewer@0.2.0/build/index.js"></script>
+</body>
