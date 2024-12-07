@@ -14,18 +14,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Install Ruby and Bundler using apt and gem
-      - name: Install Ruby and Bundler
+      # Step 2: Install Ruby, Bundler, and dependencies
+      - name: Install Ruby, Bundler, and Dependencies
         run: |
-          # Update package list and install ruby (for installing bundler later)
+          # Install ruby-full and necessary libraries
           sudo apt-get update
           sudo apt-get install -y ruby-full
 
-          # Install Bundler via gem (Ruby's package manager)
+          # Install Bundler via gem
           sudo gem install bundler
 
-          # Verify Bundler installation
+          # Install Capistrano version 3.16.0
+          sudo gem install capistrano -v 3.16.0
+
+          # Install any required gems for the project (like capistrano)
+          bundle install
+
+          # Verify Bundler and Capistrano installation
           bundle --version
+          cap --version
+
+          # Add gem path to PATH
+          export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
+          echo $PATH
 
       # Step 3: Install Node.js and npm using NVM
       - name: Install Node.js using NVM
@@ -56,14 +67,14 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 5: Ensure project directory exists and deploy
-      - name: Ensure project directory exists and deploy
+      # Step 5: Deploy to EC2 server
+      - name: Deploy to EC2 Server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Ensure the apps directory exists
             mkdir -p /home/ubuntu/apps/client_api/
 
-            # Ensure the project directory exists
+            # Navigate to the project directory
             PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "Project directory not found, creating..."
@@ -75,7 +86,7 @@ jobs:
             then
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
             fi
-            
+
             # Source nvm to ensure it's available in the current session
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -100,8 +111,29 @@ jobs:
               sudo gem install bundler
             fi
 
-            # Verify Bundler installation
+            # Install Capistrano version 3.16.0
+            sudo gem install capistrano -v 3.16.0
+
+            # Verify Bundler and Capistrano installation
             bundle --version
+            cap --version
+
+            # Add gem path to PATH
+            export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
+            echo $PATH
+
+            # Change directory to the project folder
+            cd $PROJECT_DIR
+
+            # Check if Gemfile exists before attempting to deploy
+            if [ ! -f "$PROJECT_DIR/Gemfile" ]; then
+              echo "Gemfile not found. Please check the project setup."
+              exit 1
+            fi
+
+            # Install dependencies if Gemfile is found
+            bundle install
+
             # Run the Capistrano deploy command
             bundle exec cap staging deploy
           EOF
