@@ -46,13 +46,7 @@ jobs:
       # Step 3: Install Node.js version 17.9.1 using the custom script
       - name: Install Node.js 17.9.1
         run: |
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-          source ~/.bashrc  # Ensure nvm is available
-          nvm install 17.9.1
-          nvm use 17.9.1
-          nvm alias default 17.9.1
-          node -v  # Verify the installed version
-
+          apt install nodejs npm
       # Step 4: Deploy using Capistrano
       - name: Deploy to EC2
         run: |
