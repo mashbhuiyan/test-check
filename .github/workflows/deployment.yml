@@ -24,7 +24,7 @@ jobs:
           # Install Bundler via gem
           sudo gem install bundler
 
-          # Install Capistrano version 3.16.0
+          # Install Capistrano version 3.16.0 (without -y flag)
           sudo gem install capistrano -v 3.16.0
 
           # Create a directory for gems to be installed locally
@@ -108,11 +108,11 @@ jobs:
             if ! command -v bundle &> /dev/null
             then
               echo "Bundler not found, installing..."
-              sudo gem install -y bundler
+              sudo gem install bundler
             fi
 
-            # Install Capistrano version 3.16.0
-            sudo gem install -y capistrano -v 3.16.0
+            # Install Capistrano version 3.16.0 (without -y flag)
+            sudo gem install capistrano -v 3.16.0
 
             # Verify Bundler and Capistrano installation
             bundle --version
@@ -132,7 +132,7 @@ jobs:
             fi
 
             # Install dependencies if Gemfile is found
-            sudo bundle install -y
+            bundle install
 
             # Run the Capistrano deploy command
             bundle exec cap staging deploy
