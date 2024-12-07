@@ -37,6 +37,11 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      # Step 3: Install Node.js version 17.9.1 using the custom script
+      - name: Install Node.js 17.9.1
+        run: |
+          chmod +x ./scripts/install-node.sh  # Make the script executable
+          ./scripts/install-node.sh          # Run the script
 
       # Step 4: Deploy using Capistrano
       - name: Deploy to EC2
