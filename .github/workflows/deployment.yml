@@ -28,25 +28,18 @@ jobs:
       # Step 3: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
-          # Create the .ssh directory if it doesn't exist
           mkdir -p ~/.ssh
-          
-          # Write the private key to the file
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-
-          # Set proper permissions for the private key
           chmod 600 ~/.ssh/id_rsa
-
-          # Add EC2 instance host to known hosts to avoid SSH key issues
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       # Step 4: Deploy to EC2, create apps directory, and install NVM + Node.js
       - name: Deploy to EC2, create apps directory, and install NVM + Node.js
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            # Create the apps directory in /home/ubuntu if it doesn't exist
+            # Create the apps directory if it doesn't exist
             mkdir -p /home/ubuntu/apps
-            
+
             # Ensure NVM is installed and sourced properly
             if ! command -v nvm &> /dev/null
             then
@@ -67,10 +60,10 @@ jobs:
             # Set Node.js version 17.9.1 to be used
             nvm use 17.9.1
 
-            # Ensure npm is installed and up-to-date
-            npm install -g npm@latest
+            # Downgrade npm to a compatible version with Node.js 17.9.1
+            npm install -g npm@8.11.0
 
-            # Check if the project directory exists
+            # Ensure project directory exists
             PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "Error: Project directory $PROJECT_DIR not found"
