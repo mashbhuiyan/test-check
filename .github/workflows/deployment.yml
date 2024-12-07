@@ -46,7 +46,7 @@ jobs:
       # Step 3: Install Node.js version 17.9.1 using the custom script
       - name: Install Node.js 17.9.1
         run: |
-          apt install nodejs npm
+          sudo apt install nodejs npm -y
       # Step 4: Deploy using Capistrano
       - name: Deploy to EC2
         run: |
