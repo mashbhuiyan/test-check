@@ -91,7 +91,7 @@ jobs:
             if ! command -v bundle &> /dev/null
             then
               echo "Bundler not found, installing..."
-              sudo apt-get install -y ruby-bundler
+              sudo apt  install ruby-rubygems -y
             fi
 
             # Navigate to the project directory
