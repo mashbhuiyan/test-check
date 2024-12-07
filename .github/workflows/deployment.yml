@@ -38,7 +38,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Create the apps directory if it doesn't exist
-            # mkdir -p /home/ubuntu/apps//client_api/
+            mkdir -p /home/ubuntu/apps/client_api/
 
             # Ensure NVM is installed and sourced properly
             if ! command -v nvm &> /dev/null
