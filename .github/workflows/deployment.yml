@@ -1,0 +1,45 @@
+name: CI/CD Deployment
+
+on:
+  push:
+    branches: 
+      - staging
+      
+  # pull_request:
+  #   branches: 
+  #     - main
+  #     - master
+  #     - github_actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Ruby and install dependencies
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1.0
+          
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      # Step 3: Set up SSH keys for deployment to EC2
+      - name: Set up SSH keys
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      # Step 4: Deploy using Capistrano
+      - name: Deploy to EC2
+        run: |
+          bundle exec cap staging deploy
+
