@@ -4,16 +4,11 @@ on:
   push:
     branches: 
       - staging
-      
-  # pull_request:
-  #   branches: 
-  #     - main
-  #     - master
-  #     - github_actions
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout the code from the repository
       - name: Checkout Code
@@ -37,31 +32,32 @@ jobs:
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-      # # Step 3: Install Node.js version 17.9.1 using the custom script
-      # - name: Install Node.js 17.9.1
-      #   run: |
-      #     chmod +x ./scripts.sh # Make the script executable
-      #     ./scripts.sh          # Run the script
 
-      # Step 3: Install Node.js version 17.9.1 using the custom script
-      - name: Install Node.js 17.9.1
+      # Step 4: Deploy using Capistrano (and install NVM + Node.js on EC2)
+      - name: Deploy to EC2 and Install NVM + Node.js
         run: |
-          sudo apt install nodejs npm -y
-      # Step 4: Install NVM and Node.js v17.9.1
-      - name: Install NVM and Node.js v17.9.1
-        run: |
-          # Install NVM
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-          
-          # Source nvm
-          source ~/.bashrc
-          
-      #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
-      - name: Remove old SSH key from known_hosts
-        run: |
-          ssh-keygen -R "18.189.30.188"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+            # Install NVM if not already installed
+            if ! command -v nvm &> /dev/null
+            then
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+              source ~/.bashrc
+            fi
 
-      # Step 6: Deploy using Capistrano
-      - name: Deploy to EC2
-        run: |
-          bundle exec cap staging deploy
+            # Install Node.js version 17.9.1 using NVM (if not already installed)
+            if ! nvm ls 17.9.1 &> /dev/null
+            then
+              nvm install 17.9.1
+            fi
+
+            # Set Node.js version 17.9.1 to be used
+            nvm use 17.9.1
+
+            # Ensure npm is installed and up-to-date
+            npm install -g npm
+
+            # Run the Capistrano deploy command
+            cd /path/to/your/project/directory
+            bundle exec cap staging deploy
+          EOF
+
