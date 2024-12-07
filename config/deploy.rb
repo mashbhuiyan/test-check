@@ -18,4 +18,6 @@ set :linked_files, %w{.env app/config/db_brands.json}
 # set :linked_dirs, %w{public}
 
 set :keep_releases, 4
+# Default branch to deploy from
+set :branch, 'staging'
 

@@ -1,4 +1,5 @@
 set :nvm_node, 'v17.9.1'
+set :stage, :staging
 # set :deploy_user, 'ec2-user'
 # set :deploy_to, '/home/ec2-user/apps/client_api_staging/'
 set :deploy_user, 'ubuntu'
