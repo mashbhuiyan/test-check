@@ -2,7 +2,7 @@ name: CI/CD Deployment
 
 on:
   push:
-    branches: 
+    branches:
       - staging
 
 jobs:
@@ -28,46 +28,53 @@ jobs:
       # Step 3: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
+          # Create the .ssh directory if it doesn't exist
           mkdir -p ~/.ssh
+          
+          # Write the private key to the file
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+
+          # Set proper permissions for the private key
           chmod 600 ~/.ssh/id_rsa
+
+          # Add EC2 instance host to known hosts to avoid SSH key issues
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 4: Deploy using Capistrano (and install NVM + Node.js on EC2)
+      # Step 4: Deploy to EC2 and Install NVM, Node.js, and npm
       - name: Deploy to EC2 and Install NVM + Node.js
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-      # Ensure NVM is installed and sourced properly
-      if ! command -v nvm &> /dev/null
-      then
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-      fi
-      
-      # Source nvm to ensure it's available in the current session
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+            # Ensure NVM is installed and sourced properly
+            if ! command -v nvm &> /dev/null
+            then
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            fi
+            
+            # Source nvm to ensure it's available in the current session
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-      # Install Node.js version 17.9.1 using NVM (if not already installed)
-      if ! nvm ls 17.9.1 &> /dev/null
-      then
-        nvm install 17.9.1
-      fi
+            # Install Node.js version 17.9.1 using NVM (if not already installed)
+            if ! nvm ls 17.9.1 &> /dev/null
+            then
+              nvm install 17.9.1
+            fi
 
-      # Set Node.js version 17.9.1 to be used
-      nvm use 17.9.1
+            # Set Node.js version 17.9.1 to be used
+            nvm use 17.9.1
 
-      # Ensure npm is installed and up-to-date
-      npm install -g npm
+            # Ensure npm is installed and up-to-date
+            npm install -g npm
 
-      # Check if the project directory exists (to avoid 'No such file or directory' errors)
-      PROJECT_DIR="/path/to/your/project/directory"
-      if [ ! -d "$PROJECT_DIR" ]; then
-        echo "Error: Project directory $PROJECT_DIR not found"
-        exit 1
-      fi
+            # Check if the project directory exists
+            PROJECT_DIR="/path/to/your/project/directory"
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "Error: Project directory $PROJECT_DIR not found"
+              exit 1
+            fi
 
-      # Navigate to the project directory and run the Capistrano deploy command
-      cd $PROJECT_DIR
-      bundle exec cap staging deploy
-    EOF
+            # Navigate to the project directory and run the Capistrano deploy command
+            cd $PROJECT_DIR
+            bundle exec cap staging deploy
+          EOF
