@@ -62,6 +62,10 @@ jobs:
           nvm alias default 17.9.1
           # Verify the installed version
           node -v
+      # Remove the old SSH key from known_hosts (in case of SSH mismatch)
+      - name: Remove old SSH key from known_hosts
+        run: |
+          ssh-keygen -R "18.189.30.188"
 
       # Step 5: Deploy using Capistrano
       - name: Deploy to EC2
