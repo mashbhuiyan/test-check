@@ -38,8 +38,8 @@ jobs:
           bundle --version
           cap --version
 
-      # Step 3: Install Node.js and npm using NVM
-      - name: Install Node.js using NVM
+      # Step 3: Install Node.js, npm, and PM2 using NVM
+      - name: Install Node.js, npm, and PM2 using NVM
         run: |
           # Install NVM if not already installed
           if ! command -v nvm &> /dev/null
@@ -59,6 +59,9 @@ jobs:
           # Install a compatible version of npm
           npm install -g npm@8.11.0
 
+          # Install PM2 at the latest version
+          npm install pm2@latest -g
+
       # Step 4: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
@@ -67,12 +70,54 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 5: Install PM2 globally
-      - name: Install PM2 globally
-        run: |
-          npm install pm2@latest -g
-
-      # Step 6: Deploy to EC2 Server using Capistrano
+      # Step 5: Deploy to EC2 Server using Capistrano
       - name: Deploy to EC2 Server using Capistrano
         run: |
-          cap staging deploy
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            # Ensure the client_api directory exists
+            mkdir -p /home/ubuntu/apps/client_api
+
+            # Ensure NVM is installed and sourced properly
+            if ! command -v nvm &> /dev/null
+            then
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            fi
+
+            # Source NVM to ensure it's available in the current session
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+            # Install Node.js version 17.9.1 using NVM
+            if ! nvm ls 17.9.1 &> /dev/null
+            then
+              nvm install 17.9.1
+            fi
+
+            # Set Node.js version 17.9.1 to be used
+            nvm use 17.9.1
+
+            # Downgrade npm to a compatible version with Node.js 17.9.1
+            npm install -g npm@8.11.0
+
+            # Install PM2 at the latest version
+            npm install pm2@latest -g
+
+            # Ensure Bundler is installed
+            if ! command -v bundle &> /dev/null
+            then
+              echo "Bundler not found, installing..."
+              sudo gem install bundler
+            fi
+
+            # Install Capistrano version 3.16.0 (without -y flag)
+            sudo gem install capistrano -v 3.16.0
+
+            # Verify Bundler, Capistrano, and PM2 installation
+            bundle --version
+            cap --version
+            pm2 --version
+
+            # Run the Capistrano deploy command (ensure the stage is specified)
+            cap staging deploy
+          EOF
