@@ -22,8 +22,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 3: Deploy to EC2 Server using Capistrano (install dependencies on EC2)
-      - name: Deploy to EC2 Server using Capistrano
+      # Step 3: Deploy and Install Dependencies on EC2 Server
+      - name: Deploy and Install Dependencies on EC2 Server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Update the package index
@@ -68,7 +68,12 @@ jobs:
             bundle --version
             cap --version
             pm2 --version
+          EOF
 
-            # Deploy the application using Capistrano
+      # Step 4: Run Capistrano deploy command
+      - name: Deploy to EC2 Server using Capistrano
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            # Run the Capistrano deploy command (ensure the stage is specified)
             cap staging deploy
           EOF
