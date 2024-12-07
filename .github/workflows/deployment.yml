@@ -64,7 +64,7 @@ jobs:
             npm install -g npm@8.11.0
 
             # Ensure project directory exists
-            PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
+            PROJECT_DIR="//home/ubuntu/apps/client_api/"
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "Error: Project directory $PROJECT_DIR not found"
               exit 1
