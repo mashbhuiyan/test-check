@@ -1,69 +1,50 @@
-name: CI/CD Deployment
-
-on:
-  push:
-    branches: 
-      - staging
-      
-  # pull_request:
-  #   branches: 
-  #     - main
-  #     - master
-  #     - github_actions
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout the code from the repository
-      - name: Checkout Code
+      # Checkout code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Ruby and install dependencies
+      # Set up Ruby and install dependencies
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.0
-          
-      - name: Install Dependencies
+
+      - name: Install Bundler and Dependencies
         run: |
           gem install bundler
           bundle install
 
-      # Step 3: Set up SSH keys for deployment to EC2
-      - name: Set up SSH keys
+      # Install NVM and Node.js v17.9.1
+      - name: Install NVM and Node.js v17.9.1
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-      # # Step 3: Install Node.js version 17.9.1 using the custom script
-      # - name: Install Node.js 17.9.1
-      #   run: |
-      #     chmod +x ./scripts.sh # Make the script executable
-      #     ./scripts.sh          # Run the script
-
-      # Step 3: Install Node.js version 17.9.1 using the custom script
-      - name: Install Node.js 17.9.1
-        run: |
-          sudo apt install nodejs npm -y
-      # Step 4: Install NVM and Node.js v17.9.1
-      - name: Install Node.js 17.9.1
-        run: |
+          # Install NVM
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm
-          nvm install 17.9.1  # Install Node.js v17.9.1
-          nvm use 17.9.1  # Set the default version
-          node -v  # Check the installed version to verify
+          
+          # Install Node.js v17.9.1
+          nvm install 17.9.1
+          nvm use 17.9.1  # Make sure Node.js 17.9.1 is being used
+          
+          # Verify Node.js installation
+          node -v  # Check Node version to ensure correct installation
           nvm alias default 17.9.1  # Set as the default Node.js version
-      #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
+
+      # Ensure SSH known hosts are updated to avoid host key issues
       - name: Remove old SSH key from known_hosts
         run: |
-          ssh-keygen -R "18.189.30.188"
+          ssh-keygen -R "<your-server-ip-or-hostname>"
 
-      # Step 6: Deploy using Capistrano
-      - name: Deploy to EC2
+      # Deploy using Capistrano
+      - name: Deploy using Capistrano
         run: |
+          # Ensure NVM is sourced during the deployment
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm for deployment
+          nvm install 17.9.1  # Ensure Node.js v17.9.1 is installed
+          nvm use 17.9.1  # Make it the active version
           bundle exec cap staging deploy
-
