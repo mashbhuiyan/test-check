@@ -63,7 +63,7 @@ jobs:
 
       # Step 6: Deploy using Capistrano
       - name: Deploy to EC2
-        un: |
+        run: |
           # Ensure NVM is sourced during the deployment
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm for deployment
