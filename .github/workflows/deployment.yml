@@ -36,7 +36,7 @@ jobs:
       # Step 4: Deploy using Capistrano (and install NVM + Node.js on EC2)
       - name: Deploy to EC2 and Install NVM + Node.js
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Install NVM if not already installed
             if ! command -v nvm &> /dev/null
             then
