@@ -3,7 +3,7 @@ set :nvm_node, 'v17.9.1'
 # set :deploy_to, '/home/ec2-user/apps/client_api_staging/'
 set :deploy_user, 'ubuntu'
 # set :deploy_to, '/home/mannan/apps/client_api_staging/'
-set :deploy_to, '/home/ubuntu/apps/client_api/'
+set :deploy_to, '/home/ubuntu/apps/client_api_staging'
 set :branch, 'staging'
 
 # role :app, %w{ec2-user@54.243.152.229 ec2-user@34.224.81.91}
