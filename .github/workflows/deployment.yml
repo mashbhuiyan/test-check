@@ -112,5 +112,5 @@ jobs:
             cap --version
 
             # Run the Capistrano deploy command (Capistrano will handle the project directory from staging.rb)
-            bundle exec cap staging deploy
+            cap staging deploy
           EOF
