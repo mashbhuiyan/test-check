@@ -50,12 +50,20 @@ jobs:
       # Step 4: Install NVM and Node.js v17.9.1
       - name: Install NVM and Node.js v17.9.1
         run: |
+          # Install NVM
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm
-          nvm install 17.9.1  # Install Node.js v17.9.1
-          nvm use 17.9.1  # Set the default version
-          nvm alias default 17.9.1  # Set as the default Node.js version
+          
+          # Source nvm
+          source ~/.bashrc
+          
+          # Install Node.js v17.9.1
+          nvm install 17.9.1
+          
+          # Use Node.js v17.9.1
+          nvm use 17.9.1
+          
+          # Verify Node.js version
+          node -v
       #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
       - name: Remove old SSH key from known_hosts
         run: |
@@ -65,8 +73,11 @@ jobs:
       - name: Deploy to EC2
         run: |
           # Ensure NVM is sourced during the deployment
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm for deployment
-          nvm install 17.9.1  # Ensure Node.js v17.9.1 is installed
-          nvm use 17.9.1  # Make it the active version
+          source ~/.bashrc
+          
+          # Install and use Node.js v17.9.1
+          nvm install 17.9.1
+          nvm use 17.9.1
+
+          # Deploy using Capistrano
           bundle exec cap staging deploy
