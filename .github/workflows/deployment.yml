@@ -67,19 +67,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 5: Deploy to EC2 server
+      # Step 5: Deploy to EC2 Server
       - name: Deploy to EC2 Server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            # Ensure the apps directory exists
-            mkdir -p /home/ubuntu/apps
-
-            # Navigate to the project directory
-            PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
-            if [ ! -d "$PROJECT_DIR" ]; then
-              echo "Project directory not found, creating..."
-              mkdir -p "$PROJECT_DIR"
-            fi
+            # Ensure the client_api directory exists
+            mkdir -p /home/ubuntu/apps/client_api
 
             # Ensure NVM is installed and sourced properly
             if ! command -v nvm &> /dev/null
@@ -87,7 +80,7 @@ jobs:
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
             fi
 
-            # Source nvm to ensure it's available in the current session
+            # Source NVM to ensure it's available in the current session
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -118,22 +111,6 @@ jobs:
             bundle --version
             cap --version
 
-            # Add gem path to PATH
-            export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
-            echo $PATH
-
-            # Change directory to the project folder
-            cd $PROJECT_DIR
-
-            # Check if Gemfile exists before attempting to deploy
-            if [ ! -f "$PROJECT_DIR/Gemfile" ]; then
-              echo "Gemfile not found. Please check the project setup."
-              exit 1
-            fi
-
-            # Install dependencies if Gemfile is found
-            bundle install
-
-            # Run the Capistrano deploy command
+            # Run the Capistrano deploy command (Capistrano will handle the project directory from staging.rb)
             bundle exec cap staging deploy
           EOF
