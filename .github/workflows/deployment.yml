@@ -64,12 +64,4 @@ jobs:
       # Step 6: Deploy using Capistrano
       - name: Deploy to EC2
         run: |
-          # Ensure NVM is sourced during the deployment
-          source ~/.bashrc
-          
-          # Install and use Node.js v17.9.1
-          nvm install 17.9.1
-          nvm use 17.9.1
-
-          # Deploy using Capistrano
           bundle exec cap staging deploy
