@@ -19,5 +19,3 @@ set :linked_files, %w{.env app/config/db_brands.json}
 
 set :keep_releases, 4
 
-# Specify the stages available
-set :stages, ['staging', 'production']

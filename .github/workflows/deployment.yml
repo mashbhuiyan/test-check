@@ -14,55 +14,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Install Ruby, Bundler, and Dependencies
-      - name: Install Ruby, Bundler, and Dependencies
-        run: |
-          # Install ruby-full and necessary libraries
-          sudo apt-get update
-          sudo apt-get install -y ruby-full
-
-          # Install Bundler via gem
-          sudo gem install bundler
-
-          # Install Capistrano version 3.16.0 (without -y flag)
-          sudo gem install capistrano -v 3.16.0
-
-          # Create a directory for gems to be installed locally
-          mkdir -p $HOME/.bundle
-          export BUNDLE_PATH=$HOME/.bundle
-
-          # Install any required gems for the project
-          bundle install --path $HOME/.bundle
-
-          # Verify Bundler and Capistrano installation
-          bundle --version
-          cap --version
-
-      # Step 3: Install Node.js, npm, and PM2 using NVM
-      - name: Install Node.js, npm, and PM2 using NVM
-        run: |
-          # Install NVM if not already installed
-          if ! command -v nvm &> /dev/null
-          then
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-          fi
-
-          # Source NVM
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-          # Install Node.js version 17.9.1
-          nvm install 17.9.1
-          nvm use 17.9.1
-
-          # Install a compatible version of npm
-          npm install -g npm@8.11.0
-
-          # Install PM2 at the latest version
-          npm install pm2@latest -g
-
-      # Step 4: Set up SSH keys for deployment to EC2
+      # Step 2: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
@@ -70,54 +22,53 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 5: Deploy to EC2 Server using Capistrano
+      # Step 3: Deploy to EC2 Server using Capistrano (install dependencies on EC2)
       - name: Deploy to EC2 Server using Capistrano
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            # Ensure the client_api directory exists
-            mkdir -p /home/ubuntu/apps/client_api_staging
+            # Update the package index
+            sudo apt-get update
 
-            # Ensure NVM is installed and sourced properly
+            # Install Ruby and necessary libraries
+            sudo apt-get install -y ruby-full
+
+            # Install Bundler via gem
+            sudo gem install bundler
+
+            # Install Capistrano version 3.16.0
+            sudo gem install capistrano -v 3.16.0
+
+            # Install NVM (Node Version Manager) if it's not already installed
             if ! command -v nvm &> /dev/null
             then
               curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
             fi
 
-            # Source NVM to ensure it's available in the current session
+            # Source NVM to make it available for the session
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
             # Install Node.js version 17.9.1 using NVM
-            if ! nvm ls 17.9.1 &> /dev/null
-            then
-              nvm install 17.9.1
-            fi
-
-            # Set Node.js version 17.9.1 to be used
+            nvm install 17.9.1
             nvm use 17.9.1
 
-            # Downgrade npm to a compatible version with Node.js 17.9.1
+            # Install a compatible version of npm
             npm install -g npm@8.11.0
 
-            # Install PM2 at the latest version
+            # Install PM2 globally
             npm install pm2@latest -g
 
-            # Ensure Bundler is installed
-            if ! command -v bundle &> /dev/null
-            then
-              echo "Bundler not found, installing..."
-              sudo gem install bundler
-            fi
+            # Install any required gems for the project
+            mkdir -p $HOME/.bundle
+            export BUNDLE_PATH=$HOME/.bundle
+            bundle install --path $HOME/.bundle
 
-            # Install Capistrano version 3.16.0 (without -y flag)
-            sudo gem install capistrano -v 3.16.0
-
-            # Verify Bundler, Capistrano, and PM2 installation
+            # Verify installations
             bundle --version
             cap --version
             pm2 --version
 
-            # Run the Capistrano deploy command (ensure the stage is specified)
+            # Deploy the application using Capistrano
             cap staging deploy
           EOF
