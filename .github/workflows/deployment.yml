@@ -49,7 +49,7 @@ jobs:
       # Ensure SSH known hosts are updated to avoid host key issues
       - name: Remove old SSH key from known_hosts
         run: |
-          ssh-keygen -R "<your-server-ip-or-hostname>"
+          ssh-keygen -R "18.189.30.188"
 
       # Deploy using Capistrano
       - name: Deploy using Capistrano
