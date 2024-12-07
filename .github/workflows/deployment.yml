@@ -14,12 +14,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Install Ruby and Bundler via apt
+      # Step 2: Install Ruby and Bundler using apt and gem
       - name: Install Ruby and Bundler
         run: |
-          # Update the package list and install ruby-bundler (installs both ruby and bundler)
+          # Update package list and install ruby (for installing bundler later)
           sudo apt-get update
-          sudo apt-get install -y ruby-bundler
+          sudo apt-get install -y ruby-full
+
+          # Install Bundler via gem (Ruby's package manager)
+          sudo gem install bundler
+
+          # Verify Bundler installation
+          bundle --version
 
       # Step 3: Install Node.js and npm using NVM
       - name: Install Node.js using NVM
@@ -55,7 +61,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Ensure the apps directory exists
-            mkdir -p /home/ubuntu/apps
+            mkdir -p /home/ubuntu/apps/client_api/
 
             # Ensure the project directory exists
             PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
@@ -91,8 +97,11 @@ jobs:
             if ! command -v bundle &> /dev/null
             then
               echo "Bundler not found, installing..."
-              sudo apt  install ruby-rubygems -y
+              sudo gem install bundler
             fi
+
+            # Verify Bundler installation
+            bundle --version
 
             # Navigate to the project directory
             cd $PROJECT_DIR
