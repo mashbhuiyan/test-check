@@ -55,7 +55,6 @@ jobs:
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm
           nvm install 17.9.1  # Install Node.js v17.9.1
           nvm use 17.9.1  # Set the default version
-          node -v  # Check the installed version to verify
           nvm alias default 17.9.1  # Set as the default Node.js version
       #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
       - name: Remove old SSH key from known_hosts
@@ -64,6 +63,10 @@ jobs:
 
       # Step 6: Deploy using Capistrano
       - name: Deploy to EC2
-        run: |
+        un: |
+          # Ensure NVM is sourced during the deployment
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm for deployment
+          nvm install 17.9.1  # Ensure Node.js v17.9.1 is installed
+          nvm use 17.9.1  # Make it the active version
           bundle exec cap staging deploy
-
