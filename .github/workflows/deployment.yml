@@ -14,7 +14,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Install Ruby, Bundler, and dependencies
+      # Step 2: Install Ruby, Bundler, and Dependencies
       - name: Install Ruby, Bundler, and Dependencies
         run: |
           # Install ruby-full and necessary libraries
@@ -27,16 +27,16 @@ jobs:
           # Install Capistrano version 3.16.0
           sudo gem install capistrano -v 3.16.0
 
-          # Install any required gems for the project (like capistrano)
-          bundle install
+          # Create a directory for gems to be installed locally
+          mkdir -p $HOME/.bundle
+          export BUNDLE_PATH=$HOME/.bundle
+
+          # Install any required gems for the project
+          bundle install --path $HOME/.bundle
 
           # Verify Bundler and Capistrano installation
           bundle --version
           cap --version
-
-          # Add gem path to PATH
-          export PATH="$HOME/.gem/ruby/3.3.0/bin:$PATH"
-          echo $PATH
 
       # Step 3: Install Node.js and npm using NVM
       - name: Install Node.js using NVM
@@ -72,7 +72,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Ensure the apps directory exists
-            mkdir -p /home/ubuntu/apps/client_api/
+            mkdir -p /home/ubuntu/apps
 
             # Navigate to the project directory
             PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
@@ -108,11 +108,11 @@ jobs:
             if ! command -v bundle &> /dev/null
             then
               echo "Bundler not found, installing..."
-              sudo gem install bundler
+              sudo gem install -y bundler
             fi
 
             # Install Capistrano version 3.16.0
-            sudo gem install capistrano -v 3.16.0
+            sudo gem install -y capistrano -v 3.16.0
 
             # Verify Bundler and Capistrano installation
             bundle --version
@@ -132,7 +132,7 @@ jobs:
             fi
 
             # Install dependencies if Gemfile is found
-            bundle install
+            sudo bundle install -y
 
             # Run the Capistrano deploy command
             bundle exec cap staging deploy
