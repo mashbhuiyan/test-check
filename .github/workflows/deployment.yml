@@ -14,18 +14,35 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Step 2: Set up Ruby and install dependencies
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1.0  # You can adjust this based on your Ruby version
-      
-      - name: Install Bundler and Dependencies
+      # Step 2: Install Ruby and Bundler via apt
+      - name: Install Ruby and Bundler
         run: |
-          gem install bundler  # Install Bundler to run 'bundle' commands
-          bundle install  # Install project dependencies
+          # Update the package list and install ruby-bundler (installs both ruby and bundler)
+          sudo apt-get update
+          sudo apt-get install -y ruby-bundler
 
-      # Step 3: Set up SSH keys for deployment to EC2
+      # Step 3: Install Node.js and npm using NVM
+      - name: Install Node.js using NVM
+        run: |
+          # Install NVM if not already installed
+          if ! command -v nvm &> /dev/null
+          then
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+          fi
+
+          # Source NVM
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+          # Install Node.js version 17.9.1
+          nvm install 17.9.1
+          nvm use 17.9.1
+
+          # Install a compatible version of npm
+          npm install -g npm@8.11.0
+
+      # Step 4: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
@@ -33,7 +50,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 4: Ensure the project directory exists and deploy
+      # Step 5: Ensure project directory exists and deploy
       - name: Ensure project directory exists and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
@@ -70,10 +87,11 @@ jobs:
             # Downgrade npm to a compatible version with Node.js 17.9.1
             npm install -g npm@8.11.0
 
-            # Install Bundler and dependencies if not already done
+            # Ensure Bundler is installed
             if ! command -v bundle &> /dev/null
             then
-              gem install bundler
+              echo "Bundler not found, installing..."
+              sudo apt-get install -y ruby-bundler
             fi
 
             # Navigate to the project directory
