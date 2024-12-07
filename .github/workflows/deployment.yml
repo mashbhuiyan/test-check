@@ -47,16 +47,16 @@ jobs:
       - name: Install Node.js 17.9.1
         run: |
           sudo apt install nodejs npm -y
-      # Step 4: Install Node.js version 17.9.1 using the custom script
+      # Step 4: Install NVM and Node.js v17.9.1
       - name: Install Node.js 17.9.1
         run: |
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
           export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source nvm
           nvm install 17.9.1  # Install Node.js v17.9.1
-          nvm use 17.9.1  # Use Node.js v17.9.1
-          nvm alias default 17.9.1  # Set Node.js v17.9.1 as default
-          node -v  # Verify the Node.js version
+          nvm use 17.9.1  # Set the default version
+          node -v  # Check the installed version to verify
+          nvm alias default 17.9.1  # Set as the default Node.js version
       #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
       - name: Remove old SSH key from known_hosts
         run: |
