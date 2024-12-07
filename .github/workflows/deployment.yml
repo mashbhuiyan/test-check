@@ -40,10 +40,13 @@ jobs:
           # Add EC2 instance host to known hosts to avoid SSH key issues
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # Step 4: Deploy to EC2 and Install NVM, Node.js, and npm
-      - name: Deploy to EC2 and Install NVM + Node.js
+      # Step 4: Deploy to EC2, create apps directory, and install NVM + Node.js
+      - name: Deploy to EC2, create apps directory, and install NVM + Node.js
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            # Create the apps directory in /home/ubuntu if it doesn't exist
+            mkdir -p /home/ubuntu/apps
+            
             # Ensure NVM is installed and sourced properly
             if ! command -v nvm &> /dev/null
             then
@@ -55,7 +58,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-            # Install Node.js version 17.9.1 using NVM (if not already installed)
+            # Install Node.js version 17.9.1 using NVM
             if ! nvm ls 17.9.1 &> /dev/null
             then
               nvm install 17.9.1
@@ -65,10 +68,10 @@ jobs:
             nvm use 17.9.1
 
             # Ensure npm is installed and up-to-date
-            npm install -g npm
+            npm install -g npm@latest
 
             # Check if the project directory exists
-            PROJECT_DIR="/path/to/your/project/directory"
+            PROJECT_DIR="/home/ubuntu/apps/your-project-directory"
             if [ ! -d "$PROJECT_DIR" ]; then
               echo "Error: Project directory $PROJECT_DIR not found"
               exit 1
