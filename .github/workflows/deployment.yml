@@ -20,23 +20,29 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        touch ~/.ssh/known_hosts  # Ensure the known_hosts file exists
-        ssh-keyscan -H github.com >> ~/.ssh/known_hosts  # Add GitHub to known_hosts
+        echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 3: Install Ruby, Bundler, and Node.js dependencies
+    # Step 3: Start SSH Agent and add the private key
+    - name: Start SSH Agent and add private key
+      run: |
+        eval $(ssh-agent -s) # Start SSH Agent
+        ssh-add ~/.ssh/id_rsa # Add the private key
+
+    # Step 4: Install Ruby, Bundler, and Node.js dependencies
     - name: Install Ruby, Bundler and Node.js dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
-    # Step 4: Set up gem installation directory
+    # Step 5: Set up gem installation directory
     - name: Set up local gem installation directory
       run: |
         echo "gem: --user-install" >> ~/.gemrc
         export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
         echo $PATH
 
-    # Step 5: Install Bundler and Capistrano
+    # Step 6: Install Bundler and Capistrano
     - name: Install Bundler and Capistrano
       run: |
         gem install bundler
@@ -45,7 +51,7 @@ jobs:
         bundle install
         gem install capistrano -v 3.16.0
 
-    # Step 6: Install NVM, Node.js, and PM2
+    # Step 7: Install NVM, Node.js, and PM2
     - name: Install NVM, Node.js, and PM2
       run: |
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
@@ -55,16 +61,14 @@ jobs:
         nvm install 17.9.1
         npm install pm2@latest -g
 
-    # Step 7: Install Rails
+    # Step 8: Install Rails
     - name: Install Rails
       run: |
         gem install rails -v 8.0.0
 
-    # Step 8: Deploy with Capistrano
+    # Step 9: Deploy with Capistrano
     - name: Deploy to EC2 Server using Capistrano
       run: |
-        eval "$(ssh-agent -s)" # Start SSH Agent
-        ssh-add ~/.ssh/id_rsa # Add private key
         export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
         bundle exec cap staging deploy
       env:
