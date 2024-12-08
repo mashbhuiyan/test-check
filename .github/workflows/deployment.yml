@@ -63,22 +63,11 @@ jobs:
     # Step 8: Deploy with Capistrano
     - name: Deploy to EC2 Server using Capistrano
       run: |
-        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure Bundler and Capistrano commands are found
+        eval "$(ssh-agent -s)" # Start SSH Agent
+        ssh-add ~/.ssh/id_rsa # Add private key
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
         bundle exec cap staging deploy
       env:
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         CAPISTRANO_HOST: ${{ secrets.EC2_HOST }}
 
-    # Step 9: Perform Git Pull on EC2 Server
-    - name: Perform Git Pull on EC2 Server
-      uses: appleboy/ssh-action@v0.1.8
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ubuntu
-        port: 22
-        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-        script: |
-          eval `ssh-agent -s`
-          ssh-add ~/.ssh/id_rsa
-          cd ${{ secrets.PATH }}
-          git pull origin staging
