@@ -3,17 +3,12 @@ name: CI/CD Deployment
 on:
   push:
     branches: 
-      - staging
-      
-  # pull_request:
-  #   branches: 
-  #     - main
-  #     - master
-  #     - github_actions
+      - staging  # Trigger the workflow when pushing to the staging branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout the code from the repository
       - name: Checkout Code
@@ -30,24 +25,20 @@ jobs:
           gem install bundler
           bundle install
 
-      # Step 3: Set up SSH keys for deployment to EC2
+      # Step 3: Remove old SSH key from known_hosts (in case of SSH mismatch)
+      - name: Remove old SSH key from known_hosts
+        run: |
+          ssh-keygen -R ${{ secrets.EC2_HOST }}
+
+      # Step 4: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-      # # Step 3: Install Node.js version 17.9.1 using the custom script
-      # - name: Install Node.js 17.9.1
-      #   run: |
-      #     chmod +x ./scripts.sh # Make the script executable
-      #     ./scripts.sh          # Run the script
 
-      # Step 3: Install Node.js version 17.9.1 using the custom script
-      - name: Install Node.js 17.9.1
-        run: |
-          sudo apt install nodejs npm -y
-      # Step 4: Install NVM and Node.js v17.9.1
+      # Step 5: Install NVM and Node.js v17.9.1
       - name: Install NVM and Node.js v17.9.1
         run: |
           curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
@@ -57,13 +48,8 @@ jobs:
           nvm use 17.9.1  # Set the default version
           node -v  # Check the installed version to verify
           nvm alias default 17.9.1  # Set as the default Node.js version
-      #Step 5 Remove the old SSH key from known_hosts (in case of SSH mismatch)
-      - name: Remove old SSH key from known_hosts
-        run: |
-          ssh-keygen -R "3.141.6.7"
 
       # Step 6: Deploy using Capistrano
       - name: Deploy to EC2
         run: |
           bundle exec cap staging deploy
-
