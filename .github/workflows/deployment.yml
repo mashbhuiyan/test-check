@@ -53,11 +53,11 @@ jobs:
     - name: Install PM2, Node.js, and NVM
       run: |
         # Install nvm (Node Version Manager)
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-        source ~/.bashrc  # Ensure nvm is available in the current session
+        # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        # source ~/.bashrc  # Ensure nvm is available in the current session
 
         # Install Node.js version 17.9.1 using nvm
-        nvm install 17.9.1
+        # nvm install 17.9.1
 
         # Install PM2 globally
         sudo npm install pm2@latest -g
