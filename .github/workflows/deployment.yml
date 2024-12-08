@@ -78,5 +78,5 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Run the Capistrano deploy command (ensure the stage is specified)
-            cap staging deploy
+            bundle exec cap staging deploy
           EOF
