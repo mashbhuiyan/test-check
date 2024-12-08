@@ -44,7 +44,7 @@ jobs:
       run: |
         gem install capistrano
 
-    # Step 5: Deploy to EC2 server using Capistrano
+    # Step 5: Deploy to EC2 server using Capistranos
     - name: Deploy to EC2 Server using Capistrano
       run: |
         cap staging deploy
