@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
         echo -e "Host github.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-    # Step 2: Start SSH agent and add the private key
+    # Step 2: Start SSH agent and add private key
     - name: Start SSH agent and add private key
       run: |
         # Start the SSH agent
@@ -40,13 +40,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
-    # Step 4: Install Bundler, Capistrano, and NVM
+    # Step 4: Install Bundler, Capistrano, and NVM (locally)
     - name: Install Bundler, Capistrano and NVM
       run: |
-        gem install bundler
-        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"
-        bundle install
-        gem install capistrano -v 3.16.0
+        # Install bundler locally
+        gem install bundler --user-install
+        # Install Capistrano
+        gem install capistrano -v 3.16.0 --user-install
 
     # Step 5: Install Node.js via NVM
     - name: Install NVM and Node.js
