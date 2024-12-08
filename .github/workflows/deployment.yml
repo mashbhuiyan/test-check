@@ -3,65 +3,52 @@ name: Deploy to EC2 using Capistrano
 on:
   push:
     branches:
-      - staging  # Trigger the deployment on push to the staging branch
+      - staging
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
     # Step 1: Checkout the code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Step 2: Remove old SSH key from known_hosts
-    - name: Remove old SSH key from known_hosts
-      run: |
-        # Remove any old SSH keys for the EC2 host from known_hosts
-        ssh-keygen -R ${{ secrets.EC2_HOST }}
-
-    # Step 3: Set up SSH keys and known hosts
+    # Step 2: Set up SSH keys and known hosts
     - name: Set up SSH keys and known hosts
       run: |
-        # Create the .ssh directory if it doesn't exist
         mkdir -p ~/.ssh
-
-        # Add EC2 private SSH key from GitHub secrets
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-
-        # Disable host key checking to avoid issues with first-time connections
         echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-
-        # Add the EC2 host to known_hosts to avoid authenticity verification prompts
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 4: Install Ruby, Bundler, and Node.js dependencies
-    - name: Install Ruby, Bundler, and Node.js dependencies
+    # Step 3: Install Ruby, Bundler and Node.js dependencies
+    - name: Install Ruby, Bundler and Node.js dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
-    # Step 5: Set up gem installation directory
+    # Step 4: Set up gem installation directory
     - name: Set up local gem installation directory
       run: |
         echo "gem: --user-install" >> ~/.gemrc
         export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
         echo $PATH
 
-    # Step 6: Install Bundler and Capistrano 3.16.0
+    # Step 5: Install Bundler and Capistrano 3.16.0
     - name: Install Bundler and Capistrano 3.16.0
       run: |
         gem install bundler
-        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure Bundler and gem executables are in the path
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure the Bundler and gem executables are in the path
         bundle config set --local path 'vendor/bundle'
         bundle install
         gem install capistrano -v 3.16.0
 
-    # Step 7: Install NVM, Node.js 17.9.1, and PM2
+    # Step 6: Install NVM, Node.js 17.9.1, and PM2
     - name: Install NVM, Node.js 17.9.1, and PM2
       run: |
-        # Install nvm (Node Version Manager)
+        # Install nvm
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
         
         # Source nvm directly in the script (not relying on .bashrc)
@@ -69,26 +56,22 @@ jobs:
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-        # Install Node.js version 17.9.1 using nvm
+        # Install Node.js version 17.9.1
         nvm install 17.9.1
 
-        # Install PM2 globally to manage your Node.js application
+        # Install PM2 globally
         npm install pm2@latest -g
 
-    # Step 8: Install Rails 8.0.0
+    # Step 7: Install Rails 8.0.0
     - name: Install Rails 8.0.0
       run: |
         gem install rails -v 8.0.0
 
-    # Step 9: Deploy to EC2 server using Capistrano with Bundler
+    # Step 8: Deploy to EC2 server using Capistrano with Bundler
     - name: Deploy to EC2 Server using Capistrano
       run: |
-        # Ensure the correct PATH for Capistrano and Bundler
-        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  
-        
-        # Trigger the Capistrano deployment task for the staging environment
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
         bundle exec cap staging deploy
       env:
-        # Set environment variables for Capistrano deployment
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         CAPISTRANO_HOST: ${{ secrets.EC2_HOST }}
