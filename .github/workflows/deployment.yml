@@ -68,7 +68,7 @@ jobs:
       run: |
         gem install rails -v 8.0.0
 
-    # Step 9: Deploy with Capistrano
+    # Step 9: Deploy with Capistrano on EC2
     - name: Deploy to EC2 Server using Capistrano
       run: |
         export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
