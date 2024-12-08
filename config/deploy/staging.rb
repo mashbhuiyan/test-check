@@ -26,8 +26,8 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app), in: :sequence, wait: 5 do
-      # execute "cd #{current_path} && source ~/.nvm/nvm.sh && pm2 start server.js --name staging"
-      execute "cd #{current_path} && source ~/.nvm/nvm.sh && pm2 stop staging && pm2 delete staging && pm2 start server.js --name staging"
+      execute "cd #{current_path} && source ~/.nvm/nvm.sh && pm2 start server.js --name staging"
+      # execute "cd #{current_path} && source ~/.nvm/nvm.sh && pm2 stop staging && pm2 delete staging && pm2 start server.js --name staging"
     end
   end
 
