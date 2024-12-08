@@ -8,11 +8,11 @@ set :deploy_to, '/home/ubuntu/apps/client_api_staging'
 set :branch, 'staging'
 
 # role :app, %w{ec2-user@54.243.152.229 ec2-user@34.224.81.91}
-role :app, %w{ubuntu@3.139.94.143}
+role :app, %w{ubuntu@3.141.6.7}
 
 # server '54.243.152.229', user: 'ec2-user', roles: %w{web app}, my_property: :my_value
 # server '34.224.81.91', user: 'ec2-user', roles: %w{web app}, my_property: :my_value
-server '3.139.94.143', user: 'ubuntu', roles: %w{web app}, my_property: :my_value
+server '3.141.6.7', user: 'ubuntu', roles: %w{web app}, my_property: :my_value
 
 
 namespace :deploy do
