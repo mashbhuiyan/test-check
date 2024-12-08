@@ -13,20 +13,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      # Set up Ruby, Bundler, and Capistrano
+      # Install Ruby, Bundler, and Dependencies
       - name: Install Ruby, Bundler, and Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ruby-full
           sudo gem install bundler
           sudo gem install capistrano -v 3.16.0
+          sudo gem install capistrano-nvm
           mkdir -p $HOME/.bundle
           export BUNDLE_PATH=$HOME/.bundle
           bundle install --path $HOME/.bundle
           bundle --version
           cap --version
 
-      # Set up SSH
+      # Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
         run: |
           mkdir -p ~/.ssh
