@@ -21,3 +21,9 @@ set :keep_releases, 4
 # Default branch to deploy from
 set :branch, 'staging'
 
+# Set SSH options for authentication
+set :ssh_options, {
+  forward_agent: true,  # Forward the SSH agent to the remote server
+  auth_methods: %w(publickey),  # Use public key authentication
+  keys: %w(~/.ssh/id_rsa)  # Path to your SSH private key, this will be provided from GitHub Actions
+}
