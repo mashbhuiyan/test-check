@@ -28,6 +28,9 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
             # Update the package index
             sudo apt-get update
+            
+            # Ensure the client_api directory exists
+            mkdir -p /home/ubuntu/apps/client_api_staging/
 
             # Install Ruby and necessary libraries
             sudo apt-get install -y ruby-full
