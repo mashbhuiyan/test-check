@@ -25,10 +25,12 @@ jobs:
           gem install bundler
           bundle install
 
-      # Step 3: Remove old SSH key from known_hosts (in case of SSH mismatch)
+      # Step 3: Ensure known_hosts file exists and remove old SSH key from known_hosts
       - name: Remove old SSH key from known_hosts
         run: |
-          ssh-keygen -R ${{ secrets.EC2_HOST }}
+          mkdir -p ~/.ssh  # Ensure the .ssh directory exists
+          touch ~/.ssh/known_hosts  # Create the known_hosts file if it doesn't exist
+          ssh-keygen -R ${{ secrets.EC2_HOST }}  # Remove old SSH key
 
       # Step 4: Set up SSH keys for deployment to EC2
       - name: Set up SSH keys
