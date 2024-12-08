@@ -20,8 +20,8 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+        touch ~/.ssh/known_hosts  # Ensure the known_hosts file exists
+        ssh-keyscan -H github.com >> ~/.ssh/known_hosts  # Add GitHub to known_hosts
 
     # Step 3: Install Ruby, Bundler, and Node.js dependencies
     - name: Install Ruby, Bundler and Node.js dependencies
@@ -70,4 +70,3 @@ jobs:
       env:
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         CAPISTRANO_HOST: ${{ secrets.EC2_HOST }}
-
