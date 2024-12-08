@@ -23,35 +23,12 @@ jobs:
         echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 3: Start SSH Agent and add the private key
+    # Step 3: Start SSH Agent and add private key
     - name: Start SSH Agent and add private key
       run: |
         eval $(ssh-agent -s) # Start SSH Agent
         ssh-add ~/.ssh/id_rsa # Add the private key
-    # # Step 3: SSH into EC2 and create .env file
-    # - name: Create .env file on EC2
-    #   run: |
-    #     ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-    #       # Navigate to the correct deployment directory
-    #       cd /home/ubuntu/apps/client_api_staging
 
-    #       # Create the .env file with values from GitHub secrets
-    #       echo "AIRBRAKE_PROJECT_ID=${{ secrets.AIRBRAKE_PROJECT_ID }}" > .env
-    #       echo "AIRBRAKE_PROJECT_KEY=${{ secrets.AIRBRAKE_PROJECT_KEY }}" >> .env
-    #       echo "AIRBRAKE_PROJECT_ENV=development" >> .env
-    #       echo "PORT=8081" >> .env
-    #       echo "MONGODB_URI=mongodb://127.0.0.1:27017/clientapi?authSource=admin&w=1" >> .env
-    #     EOF
-    # # Step 3: SSH into EC2 and create an empty db_brands.json
-    # - name: Create empty db_brands.json file on EC2
-    #   run: |
-    #     ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-    #       # Navigate to the deployment directory
-    #       cd /home/ubuntu/apps/client_api_staging
-
-    #       # Create an empty db_brands.json file
-    #       touch db_brands.json
-    #     EOF
     # Step 4: Install Ruby, Bundler, and Node.js dependencies
     - name: Install Ruby, Bundler and Node.js dependencies
       run: |
@@ -77,12 +54,14 @@ jobs:
     # Step 7: Install NVM, Node.js, and PM2
     - name: Install NVM, Node.js, and PM2
       run: |
+        # Install NVM and Node.js
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
         export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-        nvm install 17.9.1
-        npm install pm2@latest -g
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source NVM
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Enable auto-completion
+        nvm install 17.9.1  # Install Node.js version 17.9.1
+        nvm use 17.9.1      # Set Node.js version
+        npm install pm2@latest -g  # Install PM2 globally
 
     # Step 8: Install Rails
     - name: Install Rails
