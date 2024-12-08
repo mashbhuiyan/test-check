@@ -28,7 +28,30 @@ jobs:
       run: |
         eval $(ssh-agent -s) # Start SSH Agent
         ssh-add ~/.ssh/id_rsa # Add the private key
+    # Step 3: SSH into EC2 and create .env file
+    - name: Create .env file on EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          # Navigate to the correct deployment directory
+          cd /home/ubuntu/apps/client_api_staging
 
+          # Create the .env file with values from GitHub secrets
+          echo "AIRBRAKE_PROJECT_ID=${{ secrets.AIRBRAKE_PROJECT_ID }}" > .env
+          echo "AIRBRAKE_PROJECT_KEY=${{ secrets.AIRBRAKE_PROJECT_KEY }}" >> .env
+          echo "AIRBRAKE_PROJECT_ENV=development" >> .env
+          echo "PORT=8081" >> .env
+          echo "MONGODB_URI=mongodb://127.0.0.1:27017/clientapi?authSource=admin&w=1" >> .env
+        EOF
+    # Step 3: SSH into EC2 and create an empty db_brands.json
+    - name: Create empty db_brands.json file on EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          # Navigate to the deployment directory
+          cd /home/ubuntu/apps/client_api_staging
+
+          # Create an empty db_brands.json file
+          touch db_brands.json
+        EOF
     # Step 4: Install Ruby, Bundler, and Node.js dependencies
     - name: Install Ruby, Bundler and Node.js dependencies
       run: |
