@@ -3,7 +3,7 @@ name: Deploy to EC2 using Capistrano
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   deploy:
@@ -23,11 +23,11 @@ jobs:
         echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 3: Install Ruby and Node.js dependencies
-    - name: Install Ruby and Node.js dependencies
+    # Step 3: Install Ruby, Bundler and Node.js dependencies
+    - name: Install Ruby, Bundler and Node.js dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm curl
+        sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
     # Step 4: Set up gem installation directory
     - name: Set up local gem installation directory
@@ -36,10 +36,11 @@ jobs:
         export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
         echo $PATH
 
-    # Step 5: Install Bundler (for handling dependencies) and Capistrano 3.16.0
+    # Step 5: Install Bundler and Capistrano 3.16.0
     - name: Install Bundler and Capistrano 3.16.0
       run: |
         gem install bundler
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure the Bundler and gem executables are in the path
         bundle config set --local path 'vendor/bundle'
         bundle install
         gem install capistrano -v 3.16.0
@@ -69,6 +70,7 @@ jobs:
     # Step 8: Deploy to EC2 server using Capistrano with Bundler
     - name: Deploy to EC2 Server using Capistrano
       run: |
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
         bundle exec cap staging deploy
       env:
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
