@@ -29,52 +29,50 @@ jobs:
         eval $(ssh-agent -s) # Start SSH Agent
         ssh-add ~/.ssh/id_rsa # Add the private key
 
-    # Step 4: Install Ruby, Bundler, and Node.js dependencies on EC2
+    # Step 4: Install Ruby, Bundler, and Node.js dependencies
     - name: Install Ruby, Bundler and Node.js dependencies
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          sudo apt-get update
-          sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
+        sudo apt-get update
+        sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
-          # Install NVM, Node.js, and PM2 on EC2
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Source NVM
-          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Enable auto-completion
-
-          nvm install 17.9.1  # Install Node.js version 17.9.1
-          nvm use 17.9.1      # Set Node.js version
-          npm install pm2@latest -g  # Install PM2 globally
-
-        EOF
-
-    # Step 5: Set up gem installation directory on EC2
+    # Step 5: Set up gem installation directory
     - name: Set up local gem installation directory
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          echo "gem: --user-install" >> ~/.gemrc
-          export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
-          echo $PATH
-        EOF
+        echo "gem: --user-install" >> ~/.gemrc
+        export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+        echo $PATH
 
-    # Step 6: Install Bundler and Capistrano on EC2
+    # Step 6: Install Bundler and Capistrano
     - name: Install Bundler and Capistrano
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          gem install bundler
-          export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure Bundler and Capistrano commands are found
-          bundle config set --local path 'vendor/bundle'
-          bundle install
-          gem install capistrano -v 3.16.0
-        EOF
+        gem install bundler
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure Bundler and Capistrano commands are found
+        bundle config set --local path 'vendor/bundle'
+        bundle install
+        gem install capistrano -v 3.16.0
 
-    # Step 7: Deploy with Capistrano
+    # Step 7: Install NVM, Node.js, and PM2
+    - name: Install NVM, Node.js, and PM2
+      run: |
+        # Install NVM and Node.js
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source NVM
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Enable auto-completion
+        nvm install 17.9.1  # Install Node.js version 17.9.1
+        nvm use 17.9.1      # Set Node.js version
+        npm install pm2@latest -g  # Install PM2 globally
+
+    # Step 8: Install Rails
+    - name: Install Rails
+      run: |
+        gem install rails -v 8.0.0
+
+    # Step 9: Deploy with Capistrano
     - name: Deploy to EC2 Server using Capistrano
       run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
-          bundle exec cap staging deploy
-        EOF
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
+        bundle exec cap staging deploy
       env:
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         CAPISTRANO_HOST: ${{ secrets.EC2_HOST }}
