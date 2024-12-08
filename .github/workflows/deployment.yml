@@ -3,7 +3,7 @@ name: Deploy to EC2 using Capistrano
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   deploy:
@@ -30,21 +30,44 @@ jobs:
         # Add the EC2 instance to known_hosts to prevent host key mismatch
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 3: Install required dependencies (e.g., Ruby, Bundler, Capistrano)
-    - name: Install Ruby and dependencies
+    # Step 3: Install dependencies
+    - name: Install Ruby and Node.js dependencies
       run: |
+        # Update apt and install dependencies
         sudo apt-get update
-        sudo apt-get install -y ruby-full
-        sudo apt-get install -y build-essential libssl-dev libreadline-dev zlib1g-dev
-        gem install bundler
-        bundle install
+        sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm curl
 
-    # Step 4: Set up Capistrano 
-    - name: Install Capistrano
+    # Step 4: Set up gem installation directory (to avoid permission issues)
+    - name: Set up local gem installation directory
       run: |
-        gem install capistrano
+        echo "gem: --user-install" >> ~/.gemrc  # Install gems to the user's home directory
+        export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"  # Add local gem path to PATH
+        echo $PATH  # Debug the PATH to ensure it's correct
 
-    # Step 5: Deploy to EC2 server using Capistranos
+    # Step 5: Install Capistrano 3.16.0
+    - name: Install Capistrano 3.16.0
+      run: |
+        gem install capistrano -v 3.16.0
+
+    # Step 6: Install PM2 and Node version 17.9.1 using nvm
+    - name: Install PM2, Node.js, and NVM
+      run: |
+        # Install nvm (Node Version Manager)
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        source ~/.bashrc  # Ensure nvm is available in the current session
+
+        # Install Node.js version 17.9.1 using nvm
+        nvm install 17.9.1
+
+        # Install PM2 globally
+        sudo npm install pm2@latest -g
+
+    # Step 7: Install Rails 8.0.0
+    - name: Install Rails 8.0.0
+      run: |
+        gem install rails -v 8.0.0
+
+    # Step 8: Deploy to EC2 server using Capistrano
     - name: Deploy to EC2 Server using Capistrano
       run: |
         cap staging deploy
