@@ -21,7 +21,7 @@ set :keep_releases, 4
 # Default branch to deploy from
 set :branch, 'staging'
 
-Set SSH options for authentication
+# Set SSH options for authentication
 set :ssh_options, {
   forward_agent: true,  # Enable SSH agent forwarding
   auth_methods: %w(publickey),  # Use public key authentication
