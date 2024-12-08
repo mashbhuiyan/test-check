@@ -3,7 +3,7 @@ name: Deploy to EC2 using Capistrano
 on:
   push:
     branches:
-      - main
+      - staging
 
 jobs:
   deploy:
@@ -39,7 +39,7 @@ jobs:
         gem install bundler
         bundle install
 
-    # Step 4: Set up Capistrano (if not already installed)
+    # Step 4: Set up Capistrano 
     - name: Install Capistrano
       run: |
         gem install capistrano
