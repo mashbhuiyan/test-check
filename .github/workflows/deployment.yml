@@ -8,59 +8,69 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
+    # Step 1: Checkout the code
     - name: Checkout code
       uses: actions/checkout@v2
 
-    # Step 1: Set up SSH keys and known hosts
+    # Step 2: Set up SSH keys and known hosts
     - name: Set up SSH keys and known hosts
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        echo -e "Host github.com\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
-        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+        echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    # Step 2: Start SSH agent and add private key
-    - name: Start SSH agent and add private key
-      run: |
-        # Start the SSH agent
-        eval $(ssh-agent -s)
-        
-        # Clear any previously added keys
-        ssh-add -D
-        
-        # Add the correct private key
-        ssh-add ~/.ssh/id_rsa
-
-    # Step 3: Install Ruby, Bundler, Node.js, etc.
-    - name: Install Ruby, Bundler, Node.js dependencies
+    # Step 3: Install Ruby, Bundler and Node.js dependencies
+    - name: Install Ruby, Bundler and Node.js dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y ruby-full build-essential libssl-dev libreadline-dev zlib1g-dev nodejs npm ruby-bundler curl
 
-    # Step 4: Install Bundler, Capistrano, and NVM (locally)
-    - name: Install Bundler, Capistrano and NVM
+    # Step 4: Set up gem installation directory
+    - name: Set up local gem installation directory
       run: |
-        # Install bundler locally
-        gem install bundler --user-install
-        # Install Capistrano
-        gem install capistrano -v 3.16.0 --user-install
+        echo "gem: --user-install" >> ~/.gemrc
+        export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
+        echo $PATH
 
-    # Step 5: Install Node.js via NVM
-    - name: Install NVM and Node.js
+    # Step 5: Install Bundler and Capistrano 3.16.0
+    - name: Install Bundler and Capistrano 3.16.0
       run: |
+        gem install bundler
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure the Bundler and gem executables are in the path
+        bundle config set --local path 'vendor/bundle'
+        bundle install
+        gem install capistrano -v 3.16.0
+
+    # Step 6: Install NVM, Node.js 17.9.1, and PM2
+    - name: Install NVM, Node.js 17.9.1, and PM2
+      run: |
+        # Install nvm
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        
+        # Source nvm directly in the script (not relying on .bashrc)
         export NVM_DIR="$HOME/.nvm"
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+        # Install Node.js version 17.9.1
         nvm install 17.9.1
+
+        # Install PM2 globally
         npm install pm2@latest -g
 
-    # Step 6: Deploy using Capistrano
-    - name: Deploy with Capistrano
+    # Step 7: Install Rails 8.0.0
+    - name: Install Rails 8.0.0
       run: |
-        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"
+        gem install rails -v 8.0.0
+
+    # Step 8: Deploy to EC2 server using Capistrano with Bundler
+    - name: Deploy to EC2 Server using Capistrano
+      run: |
+        export PATH="$HOME/.gem/ruby/3.2.0/bin:$PATH"  # Ensure bundler and capistrano commands are found
         bundle exec cap staging deploy
       env:
         CAPISTRANO_SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
