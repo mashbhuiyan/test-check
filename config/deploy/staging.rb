@@ -12,7 +12,7 @@ role :app, %w{ubuntu@3.141.6.7}
 
 # server '54.243.152.229', user: 'ec2-user', roles: %w{web app}, my_property: :my_value
 # server '34.224.81.91', user: 'ec2-user', roles: %w{web app}, my_property: :my_value
-server '3.141.6.7', user: 'ubuntu', roles: %w{web app}, my_property: :my_value
+server '13.59.155.53', user: 'ubuntu', roles: %w{web app}, my_property: :my_value
 
 
 namespace :deploy do
