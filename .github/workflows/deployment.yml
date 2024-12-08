@@ -3,7 +3,7 @@ name: Deploy to EC2 using Capistrano
 on:
   push:
     branches:
-      - main
+      - staging
 
 jobs:
   deploy:
