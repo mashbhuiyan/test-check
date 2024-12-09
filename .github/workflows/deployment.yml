@@ -57,7 +57,7 @@ jobs:
         npm -v   # Verify npm version
         npm install pm2@latest -g
 
-    - name: Install Rails
+    - name: Install Rails app
       run: |
         gem install rails -v 8.0.0
 
