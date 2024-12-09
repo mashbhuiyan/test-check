@@ -47,12 +47,12 @@ jobs:
 
     - name: Install NVM, Node.js, and PM2
       run: |
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source NVM
-        nvm --version  # Check nvm version
-        nvm install 17.9.1
-        nvm use 17.9.1
+        # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        # export NVM_DIR="$HOME/.nvm"
+        # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source NVM
+        # nvm --version  # Check nvm version
+        # nvm install 17.9.1
+        # nvm use 17.9.1
         node -v  # Verify Node.js version
         npm -v   # Verify npm version
         npm install pm2@latest -g
