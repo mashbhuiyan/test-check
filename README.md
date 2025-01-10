@@ -1,7 +1,3 @@
-
-
-
-
 ## Getting Started
 
 -   [Live link](https://api.insurance.io)
