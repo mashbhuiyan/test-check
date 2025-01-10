@@ -1,4 +1,4 @@
-## Getting Started
+## Getting Started with the steps
 
 -   [Live link](https://api.insurance.io)
 -   [Staging link](https://staging-api.insurance.io)
