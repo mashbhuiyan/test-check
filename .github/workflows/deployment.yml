@@ -16,17 +16,15 @@ jobs:
     - name: Set up SSH keys and known hosts
       run: |
         mkdir -p ~/.ssh
-        # Store the EC2 private key in a file
-        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ohio.pem
-        chmod 600 ~/.ssh/ohio.pem  # Set permissions to read/write for the owner
-        echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  LogLevel=DEBUG3" >> ~/.ssh/config
-        # Add EC2's host key to known_hosts to avoid SSH warnings
+        echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" >> ~/.ssh/config
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
     - name: Start SSH Agent and add private key
       run: |
-        eval $(ssh-agent -s)  # Start the SSH agent
-        ssh-add ~/.ssh/ohio.pem  # Add the EC2 private key to the agent
+        eval $(ssh-agent -s) # Start SSH Agent
+        ssh-add ~/.ssh/id_rsa # Add the private key
 
     - name: Install Ruby, Bundler, and Node.js dependencies
       run: |
@@ -49,6 +47,12 @@ jobs:
 
     - name: Install NVM, Node.js, and PM2
       run: |
+        # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+        # export NVM_DIR="$HOME/.nvm"
+        # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Source NVM
+        # nvm --version  # Check nvm version
+        # nvm install 17.9.1
+        # nvm use 17.9.1
         node -v  # Verify Node.js version
         npm -v   # Verify npm version
         npm install pm2@latest -g
